@@ -366,6 +366,38 @@ Object serializeSymbolKind(APIRecord::RecordKind RK, Language Lang) {
     Kind["identifier"] = AddLangPrefix("struct");
     Kind["displayName"] = "Structure";
     break;
+  case APIRecord::RK_CXXField:
+    Kind["identifier"] = AddLangPrefix("property");
+    Kind["displayName"] = "Instance Property";
+    break;
+  case APIRecord::RK_Union:
+    Kind["identifier"] = AddLangPrefix("union");
+    Kind["displayName"] = "Union";
+    break;
+  case APIRecord::RK_StaticField:
+    Kind["identifier"] = AddLangPrefix("type.property");
+    Kind["displayName"] = "Type Property";
+    break;
+  case APIRecord::RK_CXXClass:
+    Kind["identifier"] = AddLangPrefix("class");
+    Kind["displayName"] = "Class";
+    break;
+  case APIRecord::RK_CXXStaticMethod:
+    Kind["identifier"] = AddLangPrefix("type.method");
+    Kind["displayName"] = "Static Method";
+    break;
+  case APIRecord::RK_CXXInstanceMethod:
+    Kind["identifier"] = AddLangPrefix("method");
+    Kind["displayName"] = "Instance Method";
+    break;
+  case APIRecord::RK_CXXConstructorMethod:
+    Kind["identifier"] = AddLangPrefix("method");
+    Kind["displayName"] = "Constructor";
+    break;
+  case APIRecord::RK_CXXDestructorMethod:
+    Kind["identifier"] = AddLangPrefix("method");
+    Kind["displayName"] = "Destructor";
+    break;
   case APIRecord::RK_ObjCIvar:
     Kind["identifier"] = AddLangPrefix("ivar");
     Kind["displayName"] = "Instance Variable";
@@ -543,7 +575,6 @@ Array generateParentContexts(const RecordTy &Record, const APISet &API,
 
   return ParentContexts;
 }
-
 } // namespace
 
 /// Defines the format version emitted by SymbolGraphSerializer.
@@ -698,6 +729,28 @@ void SymbolGraphSerializer::visitStructRecord(const StructRecord &Record) {
   serializeMembers(Record, Record.Fields);
 }
 
+void SymbolGraphSerializer::visitStaticFieldRecord(
+    const StaticFieldRecord &Record) {
+  auto StaticField = serializeAPIRecord(Record);
+  if (!StaticField)
+    return;
+  Symbols.emplace_back(std::move(*StaticField));
+  serializeRelationship(RelationshipKind::MemberOf, Record, Record.Context);
+}
+
+void SymbolGraphSerializer::visitCXXClassRecord(const CXXClassRecord &Record) {
+  auto Class = serializeAPIRecord(Record);
+  if (!Class)
+    return;
+
+  Symbols.emplace_back(std::move(*Class));
+  serializeMembers(Record, Record.Fields);
+  serializeMembers(Record, Record.Methods);
+
+  for (const auto Base : Record.Bases)
+    serializeRelationship(RelationshipKind::InheritsFrom, Record, Base);
+}
+
 void SymbolGraphSerializer::visitObjCContainerRecord(
     const ObjCContainerRecord &Record) {
   auto ObjCContainer = serializeAPIRecord(Record);
@@ -760,6 +813,12 @@ void SymbolGraphSerializer::serializeSingleRecord(const APIRecord *Record) {
     break;
   case APIRecord::RK_Struct:
     visitStructRecord(*cast<StructRecord>(Record));
+    break;
+  case APIRecord::RK_StaticField:
+    visitStaticFieldRecord(*cast<StaticFieldRecord>(Record));
+    break;
+  case APIRecord::RK_CXXClass:
+    visitCXXClassRecord(*cast<CXXClassRecord>(Record));
     break;
   case APIRecord::RK_ObjCInterface:
     visitObjCContainerRecord(*cast<ObjCInterfaceRecord>(Record));
