@@ -105,13 +105,6 @@ SANITIZER_INTERFACE_ATTRIBUTE void *__sanitizer_internal_memset(void *s, int c,
 }
 }  // extern "C"
 
-void *internal_memcpy(void *dest, const void *src, uptr n)
-    ALIAS(__sanitizer_internal_memcpy);
-void *internal_memmove(void *dest, const void *src, uptr n)
-    ALIAS(__sanitizer_internal_memmove);
-void *internal_memset(void *s, int c, uptr n)
-    ALIAS(__sanitizer_internal_memset);
-
 uptr internal_strcspn(const char *s, const char *reject) {
   uptr i;
   for (i = 0; s[i]; i++) {

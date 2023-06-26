@@ -1488,6 +1488,27 @@ genHLFIRIntrinsicRefCore(PreparedActualArguments &loweredActuals,
     return buildReductionIntrinsic(loweredActuals, loc, builder, callContext,
                                    buildAllOperation, false);
   }
+  if (intrinsicName == "dot_product") {
+    llvm::SmallVector<mlir::Value> operands = getOperandVector(loweredActuals);
+    mlir::Type resultTy =
+        computeResultType(operands[0], *callContext.resultType);
+    hlfir::DotProductOp dotProductOp = builder.create<hlfir::DotProductOp>(
+        loc, resultTy, operands[0], operands[1]);
+
+    return {hlfir::EntityWithAttributes{dotProductOp.getResult()}};
+  }
+  if (intrinsicName == "count") {
+    llvm::SmallVector<mlir::Value> operands = getOperandVector(loweredActuals);
+    mlir::Value array = operands[0];
+    mlir::Value dim = operands[1];
+    if (dim)
+      dim = hlfir::loadTrivialScalar(loc, builder, hlfir::Entity{dim});
+    mlir::Value kind = operands[2];
+    mlir::Type resultTy = computeResultType(array, *callContext.resultType);
+    hlfir::CountOp countOp =
+        builder.create<hlfir::CountOp>(loc, resultTy, array, dim, kind);
+    return {hlfir::EntityWithAttributes{countOp.getResult()}};
+  }
 
   // TODO add hlfir operations for other transformational intrinsics here
 
@@ -1897,4 +1918,20 @@ std::optional<hlfir::EntityWithAttributes> Fortran::lower::convertCallToHLFIR(
     Fortran::lower::SymMap &symMap, Fortran::lower::StatementContext &stmtCtx) {
   CallContext callContext(procRef, resultType, loc, converter, symMap, stmtCtx);
   return genProcedureRef(callContext);
+}
+
+void Fortran::lower::convertUserDefinedAssignmentToHLFIR(
+    mlir::Location loc, Fortran::lower::AbstractConverter &converter,
+    const evaluate::ProcedureRef &procRef, hlfir::Entity lhs, hlfir::Entity rhs,
+    Fortran::lower::SymMap &symMap) {
+  Fortran::lower::StatementContext definedAssignmentContext;
+  CallContext callContext(procRef, /*resultType=*/std::nullopt, loc, converter,
+                          symMap, definedAssignmentContext);
+  Fortran::lower::CallerInterface caller(procRef, converter);
+  mlir::FunctionType callSiteType = caller.genFunctionType();
+  PreparedActualArgument preparedLhs{lhs, /*isPresent=*/std::nullopt};
+  PreparedActualArgument preparedRhs{rhs, /*isPresent=*/std::nullopt};
+  PreparedActualArguments loweredActuals{preparedLhs, preparedRhs};
+  genUserCall(loweredActuals, caller, callSiteType, callContext);
+  return;
 }

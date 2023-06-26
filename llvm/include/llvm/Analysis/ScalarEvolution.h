@@ -560,6 +560,9 @@ public:
   /// expression.
   const SCEV *getSCEV(Value *V);
 
+  /// Return an existing SCEV for V if there is one, otherwise return nullptr.
+  const SCEV *getExistingSCEV(Value *V);
+
   const SCEV *getConstant(ConstantInt *V);
   const SCEV *getConstant(const APInt &Val);
   const SCEV *getConstant(Type *Ty, uint64_t V, bool isSigned = false);
@@ -1674,7 +1677,7 @@ private:
   /// Determines the range for the affine SCEVAddRecExpr {\p Start,+,\p Step}.
   /// Helper for \c getRange.
   ConstantRange getRangeForAffineAR(const SCEV *Start, const SCEV *Step,
-                                    const SCEV *MaxBECount, unsigned BitWidth);
+                                    const APInt &MaxBECount);
 
   /// Determines the range for the affine non-self-wrapping SCEVAddRecExpr {\p
   /// Start,+,\p Step}<nw>.
@@ -1687,7 +1690,7 @@ private:
   /// Step} by "factoring out" a ternary expression from the add recurrence.
   /// Helper called by \c getRange.
   ConstantRange getRangeViaFactoring(const SCEV *Start, const SCEV *Step,
-                                     const SCEV *MaxBECount, unsigned BitWidth);
+                                     const APInt &MaxBECount);
 
   /// If the unknown expression U corresponds to a simple recurrence, return
   /// a constant range which represents the entire recurrence.  Note that
@@ -2056,9 +2059,6 @@ private:
   void visitAndClearUsers(SmallVectorImpl<Instruction *> &Worklist,
                           SmallPtrSetImpl<Instruction *> &Visited,
                           SmallVectorImpl<const SCEV *> &ToForget);
-
-  /// Return an existing SCEV for V if there is one, otherwise return nullptr.
-  const SCEV *getExistingSCEV(Value *V);
 
   /// Erase Value from ValueExprMap and ExprValueMap.
   void eraseValueFromMap(Value *V);
