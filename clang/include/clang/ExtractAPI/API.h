@@ -158,6 +158,8 @@ struct APIRecord {
   enum RecordKind {
     RK_Unknown,
     RK_GlobalFunction,
+    RK_GlobalFunctionTemplate,
+    RK_GlobalFunctionTemplateSpecialization,
     RK_GlobalVariable,
     RK_GlobalVariableTemplate,
     RK_GlobalVariableTemplateSpecialization,
@@ -277,12 +279,60 @@ struct GlobalFunctionRecord : APIRecord {
                   IsFromSystemHeader),
         Signature(Signature) {}
 
+  GlobalFunctionRecord(RecordKind Kind, StringRef USR, StringRef Name,
+                       PresumedLoc Loc, AvailabilitySet Availabilities,
+                       LinkageInfo Linkage, const DocComment &Comment,
+                       DeclarationFragments Declaration,
+                       DeclarationFragments SubHeading,
+                       FunctionSignature Signature, bool IsFromSystemHeader)
+      : APIRecord(Kind, USR, Name, Loc, std::move(Availabilities), Linkage,
+                  Comment, Declaration, SubHeading, IsFromSystemHeader),
+        Signature(Signature) {}
+
   static bool classof(const APIRecord *Record) {
     return Record->getKind() == RK_GlobalFunction;
   }
 
 private:
   virtual void anchor();
+};
+
+struct GlobalFunctionTemplateRecord : GlobalFunctionRecord {
+  Template Templ;
+
+  GlobalFunctionTemplateRecord(StringRef USR, StringRef Name, PresumedLoc Loc,
+                               AvailabilitySet Availabilities,
+                               LinkageInfo Linkage, const DocComment &Comment,
+                               DeclarationFragments Declaration,
+                               DeclarationFragments SubHeading,
+                               FunctionSignature Signature, Template Template,
+                               bool IsFromSystemHeader)
+      : GlobalFunctionRecord(RK_GlobalFunctionTemplate, USR, Name, Loc,
+                             std::move(Availabilities), Linkage, Comment,
+                             Declaration, SubHeading, Signature,
+                             IsFromSystemHeader),
+        Templ(Template) {}
+
+  static bool classof(const APIRecord *Record) {
+    return Record->getKind() == RK_GlobalFunctionTemplate;
+  }
+};
+
+struct GlobalFunctionTemplateSpecializationRecord : GlobalFunctionRecord {
+  GlobalFunctionTemplateSpecializationRecord(
+      StringRef USR, StringRef Name, PresumedLoc Loc,
+      AvailabilitySet Availabilities, LinkageInfo Linkage,
+      const DocComment &Comment, DeclarationFragments Declaration,
+      DeclarationFragments SubHeading, FunctionSignature Signature,
+      bool IsFromSystemHeader)
+      : GlobalFunctionRecord(RK_GlobalFunctionTemplateSpecialization, USR, Name,
+                             Loc, std::move(Availabilities), Linkage, Comment,
+                             Declaration, SubHeading, Signature,
+                             IsFromSystemHeader) {}
+
+  static bool classof(const APIRecord *Record) {
+    return Record->getKind() == RK_GlobalFunctionTemplateSpecialization;
+  }
 };
 
 /// This holds information associated with global functions.
@@ -1002,6 +1052,12 @@ template <>
 struct has_function_signature<ObjCClassMethodRecord> : public std::true_type {};
 template <>
 struct has_function_signature<CXXMethodRecord> : public std::true_type {};
+template <>
+struct has_function_signature<GlobalFunctionTemplateRecord>
+    : public std::true_type {};
+template <>
+struct has_function_signature<GlobalFunctionTemplateSpecializationRecord>
+    : public std::true_type {};
 
 template <typename RecordTy> struct has_access : public std::false_type {};
 template <> struct has_access<CXXMethodRecord> : public std::true_type {};
@@ -1018,6 +1074,8 @@ struct has_template<GlobalVariableTemplateRecord> : public std::true_type {};
 template <>
 struct has_template<GlobalVariableTemplatePartialSpecializationRecord>
     : public std::true_type {};
+template <>
+struct has_template<GlobalFunctionTemplateRecord> : public std::true_type {};
 
 /// APISet holds the set of API records collected from given inputs.
 class APISet {
@@ -1054,6 +1112,21 @@ public:
                     const DocComment &Comment, DeclarationFragments Declaration,
                     DeclarationFragments SubHeading,
                     FunctionSignature Signature, bool IsFromSystemHeader);
+
+  GlobalFunctionTemplateRecord *addGlobalFunctionTemplate(
+      StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, LinkageInfo Linkage,
+      const DocComment &Comment, DeclarationFragments Declaration,
+      DeclarationFragments SubHeading, FunctionSignature Signature,
+      Template Template, bool IsFromSystemHeader);
+
+  GlobalFunctionTemplateSpecializationRecord *
+  addGlobalFunctionTemplateSpecialization(
+      StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, LinkageInfo Linkage,
+      const DocComment &Comment, DeclarationFragments Declaration,
+      DeclarationFragments SubHeading, FunctionSignature Signature,
+      bool IsFromSystemHeader);
 
   /// Create and add an enum constant record into the API set.
   ///
@@ -1299,6 +1372,14 @@ public:
   const RecordMap<GlobalFunctionRecord> &getGlobalFunctions() const {
     return GlobalFunctions;
   }
+  const RecordMap<GlobalFunctionTemplateRecord> &
+  getGlobalFunctionTemplates() const {
+    return GlobalFunctionTemplates;
+  }
+  const RecordMap<GlobalFunctionTemplateSpecializationRecord> &
+  getGlobalFunctionTemplateSpecializations() const {
+    return GlobalFunctionTemplateSpecializations;
+  }
   const RecordMap<GlobalVariableRecord> &getGlobalVariables() const {
     return GlobalVariables;
   }
@@ -1385,6 +1466,9 @@ private:
 
   llvm::DenseMap<StringRef, APIRecord *> USRBasedLookupTable;
   RecordMap<GlobalFunctionRecord> GlobalFunctions;
+  RecordMap<GlobalFunctionTemplateRecord> GlobalFunctionTemplates;
+  RecordMap<GlobalFunctionTemplateSpecializationRecord>
+      GlobalFunctionTemplateSpecializations;
   RecordMap<GlobalVariableRecord> GlobalVariables;
   RecordMap<GlobalVariableTemplateRecord> GlobalVariableTemplates;
   RecordMap<GlobalVariableTemplateSpecializationRecord>
