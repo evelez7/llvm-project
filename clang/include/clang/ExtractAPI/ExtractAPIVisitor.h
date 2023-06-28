@@ -89,6 +89,8 @@ public:
   bool WalkUpFromVarTemplatePartialSpecializationDecl(
       const VarTemplatePartialSpecializationDecl *Decl);
 
+  bool WalkUpFromFunctionTemplateDecl(const FunctionTemplateDecl *Decl);
+
   bool VisitRecordDecl(const RecordDecl *Decl);
 
   bool VisitCXXRecordDecl(const CXXRecordDecl *Decl);
@@ -108,6 +110,8 @@ public:
 
   bool VisitVarTemplatePartialSpecializationDecl(
       const VarTemplatePartialSpecializationDecl *Decl);
+
+  bool VisitFunctionTemplateDecl(const FunctionTemplateDecl *Decl);
 
   bool VisitObjCInterfaceDecl(const ObjCInterfaceDecl *Decl);
 
@@ -267,13 +271,8 @@ bool ExtractAPIVisitorBase<Derived>::VisitFunctionDecl(
   switch (Decl->getTemplatedKind()) {
   case FunctionDecl::TK_NonTemplate:
   case FunctionDecl::TK_DependentNonTemplate:
-    break;
   case FunctionDecl::TK_MemberSpecialization:
   case FunctionDecl::TK_FunctionTemplateSpecialization:
-    if (auto *TemplateInfo = Decl->getTemplateSpecializationInfo()) {
-      if (!TemplateInfo->isExplicitInstantiationOrSpecialization())
-        return true;
-    }
     break;
   case FunctionDecl::TK_FunctionTemplate:
   case FunctionDecl::TK_DependentFunctionTemplateSpecialization:
@@ -296,17 +295,23 @@ bool ExtractAPIVisitorBase<Derived>::VisitFunctionDecl(
                                             Context.getDiagnostics());
 
   // Build declaration fragments, sub-heading, and signature of the function.
-  DeclarationFragments Declaration =
-      DeclarationFragmentsBuilder::getFragmentsForFunction(Decl);
   DeclarationFragments SubHeading =
       DeclarationFragmentsBuilder::getSubHeading(Decl);
   FunctionSignature Signature =
       DeclarationFragmentsBuilder::getFunctionSignature(Decl);
 
-  // Add the function record to the API set.
-  API.addGlobalFunction(Name, USR, Loc, AvailabilitySet(Decl), Linkage, Comment,
-                        Declaration, SubHeading, Signature,
-                        isInSystemHeader(Decl));
+  if (Decl->getTemplateSpecializationInfo())
+    API.addGlobalFunctionTemplateSpec(
+        Name, USR, Loc, AvailabilitySet(Decl), Linkage, Comment,
+        DeclarationFragmentsBuilder::
+            getFragmentsForFunctionTemplateSpecialization(Decl),
+        SubHeading, Signature, isInSystemHeader(Decl));
+  else
+    // Add the function record to the API set.
+    API.addGlobalFunction(
+        Name, USR, Loc, AvailabilitySet(Decl), Linkage, Comment,
+        DeclarationFragmentsBuilder::getFragmentsForFunction(Decl), SubHeading,
+        Signature, isInSystemHeader(Decl));
   return true;
 }
 
@@ -401,6 +406,13 @@ bool ExtractAPIVisitorBase<Derived>::
     WalkUpFromVarTemplatePartialSpecializationDecl(
         const VarTemplatePartialSpecializationDecl *Decl) {
   getDerivedExtractAPIVisitor().VisitVarTemplatePartialSpecializationDecl(Decl);
+  return true;
+}
+
+template <typename Derived>
+bool ExtractAPIVisitorBase<Derived>::WalkUpFromFunctionTemplateDecl(
+    const FunctionTemplateDecl *Decl) {
+  getDerivedExtractAPIVisitor().VisitFunctionTemplateDecl(Decl);
   return true;
 }
 
@@ -713,6 +725,39 @@ bool ExtractAPIVisitorBase<Derived>::VisitVarTemplatePartialSpecializationDecl(
       Name, USR, Loc, AvailabilitySet(Decl), Linkage, Comment, Declaration,
       SubHeading, DeclarationFragmentsBuilder::getTemplate(Decl),
       isInSystemHeader(Decl));
+  return true;
+}
+
+template <typename Derived>
+bool ExtractAPIVisitorBase<Derived>::VisitFunctionTemplateDecl(
+    const FunctionTemplateDecl *Decl) {
+  if (!getDerivedExtractAPIVisitor().shouldDeclBeIncluded(Decl))
+    return true;
+
+  // Collect symbol information.
+  StringRef Name = Decl->getName();
+  StringRef USR = API.recordUSR(Decl);
+  PresumedLoc Loc =
+      Context.getSourceManager().getPresumedLoc(Decl->getLocation());
+  LinkageInfo Linkage = Decl->getLinkageAndVisibility();
+  DocComment Comment;
+  if (auto *RawComment =
+          getDerivedExtractAPIVisitor().fetchRawCommentForDecl(Decl))
+    Comment = RawComment->getFormattedLines(Context.getSourceManager(),
+                                            Context.getDiagnostics());
+
+  DeclarationFragments SubHeading =
+      DeclarationFragmentsBuilder::getSubHeading(Decl);
+  FunctionSignature Signature =
+      DeclarationFragmentsBuilder::getFunctionSignature(
+          Decl->getTemplatedDecl());
+
+  API.addGlobalFunctionTemplate(
+      Name, USR, Loc, AvailabilitySet(Decl), Linkage, Comment,
+      DeclarationFragmentsBuilder::getFragmentsForFunctionTemplate(Decl),
+      SubHeading, Signature, DeclarationFragmentsBuilder::getTemplate(Decl),
+      isInSystemHeader(Decl));
+
   return true;
 }
 

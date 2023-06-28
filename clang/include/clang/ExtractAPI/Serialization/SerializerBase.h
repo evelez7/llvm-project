@@ -47,6 +47,10 @@ public:
 
     getDerived()->traverseGlobalVariableTemplatePartialSpecRecords();
 
+    getDerived()->traverseGlobalFunctionTemplateRecords();
+
+    getDerived()->traverseGlobalFunctionTemplateSpecRecords();
+
     getDerived()->traverseStructRecords();
 
     getDerived()->traverseObjCInterfaces();
@@ -125,6 +129,19 @@ public:
           *GlobalVariableTemplatePartialSpec.second);
   }
 
+  void traverseGlobalFunctionTemplateRecords() {
+    for (const auto &GlobalFunctionTemplate : API.getGlobalFunctionTemplates())
+      getDerived()->visitGlobalFunctionTemplateRecord(
+          *GlobalFunctionTemplate.second);
+  }
+
+  void traverseGlobalFunctionTemplateSpecRecords() {
+    for (const auto &GlobalFunctionTemplateSpec :
+         API.getGlobalFunctionTemplateSpecializations())
+      getDerived()->visitGlobalFunctionTemplateSpecRecord(
+          *GlobalFunctionTemplateSpec.second);
+  }
+
   void traverseConcepts() {
     for (const auto &Concept : API.getConcepts())
       getDerived()->visitConceptRecord(*Concept.second);
@@ -181,6 +198,12 @@ public:
 
   void visitGlobalVariableTemplatePartialSpecRecord(
       const GlobalVariableTemplatePartialSpecRecord &Record){};
+
+  void visitGlobalFunctionTemplateRecord(
+      const GlobalFunctionTemplateRecord &Record){};
+
+  void visitGlobalFunctionTemplateSpecRecord(
+      const GlobalFunctionTemplateSpecRecord &Record){};
 
   /// Visit an Objective-C container record.
   void visitObjCContainerRecord(const ObjCContainerRecord &Record){};
