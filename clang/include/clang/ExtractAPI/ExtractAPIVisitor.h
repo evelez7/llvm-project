@@ -536,8 +536,7 @@ bool ExtractAPIVisitorBase<Derived>::VisitCXXMethodDecl(
   if (!getDerivedExtractAPIVisitor().shouldDeclBeIncluded(Decl) ||
       Decl->isImplicit())
     return true;
-  switch (Decl->getTemplatedKind())
-  {
+  switch (Decl->getTemplatedKind()) {
   case FunctionDecl::TK_MemberSpecialization:
   case FunctionDecl::TK_FunctionTemplateSpecialization:
   case FunctionDecl::TK_FunctionTemplate:
@@ -716,21 +715,29 @@ bool ExtractAPIVisitorBase<Derived>::VisitVarTemplateDecl(
                                             Context.getDiagnostics());
 
   // Build declaration fragments and sub-heading for the variable.
-  DeclarationFragments Declaration =
-      DeclarationFragmentsBuilder::getFragmentsForVarTemplate(
-          Decl->getTemplatedDecl());
+  DeclarationFragments Declaration;
+  Declaration.append(
+      DeclarationFragmentsBuilder::getFragmentsForRedeclarableTemplate(Decl));
+  Declaration.append(DeclarationFragmentsBuilder::getFragmentsForVarTemplate(
+      Decl->getTemplatedDecl()));
+  // Inject template fragments before var fragments.
   DeclarationFragments SubHeading =
       DeclarationFragmentsBuilder::getSubHeading(Decl);
 
-  // Inject template fragments before var fragments.
-  Declaration.insert(
-      Declaration.begin(),
-      DeclarationFragmentsBuilder::getFragmentsForRedeclarableTemplate(Decl));
-
-  API.addGlobalVariableTemplate(Name, USR, Loc, AvailabilitySet(Decl), Linkage,
-                                Comment, Declaration, SubHeading,
-                                DeclarationFragmentsBuilder::getTemplate(Decl),
-                                isInSystemHeader(Decl));
+  SmallString<128> ParentUSR;
+  index::generateUSRForDecl(dyn_cast<CXXRecordDecl>(Decl->getDeclContext()),
+                            ParentUSR);
+  if (Decl->getDeclContext()->getDeclKind() == Decl::CXXRecord)
+    API.addCXXFieldTemplate(
+        API.findRecordForUSR(ParentUSR), Name, USR, Loc, AvailabilitySet(Decl),
+        Comment, Declaration, SubHeading,
+        DeclarationFragmentsBuilder::getAccessControl(Decl),
+        DeclarationFragmentsBuilder::getTemplate(Decl), isInSystemHeader(Decl));
+  else
+    API.addGlobalVariableTemplate(
+        Name, USR, Loc, AvailabilitySet(Decl), Linkage, Comment, Declaration,
+        SubHeading, DeclarationFragmentsBuilder::getTemplate(Decl),
+        isInSystemHeader(Decl));
   return true;
 }
 
