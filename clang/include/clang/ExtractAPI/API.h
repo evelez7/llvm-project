@@ -180,6 +180,8 @@ struct APIRecord {
     RK_CXXInstanceMethod,
     RK_CXXConstructorMethod,
     RK_CXXDestructorMethod,
+    RK_CXXMethodTemplate,
+    RK_CXXMethodTemplateSpecialization,
     RK_ObjCInstanceProperty,
     RK_ObjCClassProperty,
     RK_ObjCIvar,
@@ -619,6 +621,42 @@ private:
   virtual void anchor();
 };
 
+struct CXXMethodTemplateRecord : CXXMethodRecord {
+  Template Templ;
+
+  CXXMethodTemplateRecord(StringRef USR, StringRef Name, PresumedLoc Loc,
+                          AvailabilitySet Availabilities,
+                          const DocComment &Comment,
+                          DeclarationFragments Declaration,
+                          DeclarationFragments SubHeading,
+                          FunctionSignature Signature, AccessControl Access,
+                          Template Template, bool IsFromSystemHeader)
+      : CXXMethodRecord(RK_CXXMethodTemplate, USR, Name, Loc,
+                        std::move(Availabilities), Comment, Declaration,
+                        SubHeading, Signature, Access, IsFromSystemHeader),
+        Templ(Template) {}
+
+  static bool classof(const APIRecord *Record) {
+    return Record->getKind() == RK_CXXMethodTemplate;
+  }
+};
+
+struct CXXMethodTemplateSpecializationRecord : CXXMethodRecord {
+  CXXMethodTemplateSpecializationRecord(
+      StringRef USR, StringRef Name, PresumedLoc Loc,
+      AvailabilitySet Availabilities, const DocComment &Comment,
+      DeclarationFragments Declaration, DeclarationFragments SubHeading,
+      FunctionSignature Signature, AccessControl Access,
+      bool IsFromSystemHeader)
+      : CXXMethodRecord(RK_CXXMethodTemplateSpecialization, USR, Name, Loc,
+                        std::move(Availabilities), Comment, Declaration,
+                        SubHeading, Signature, Access, IsFromSystemHeader) {}
+
+  static bool classof(const APIRecord *Record) {
+    return Record->getKind() == RK_CXXMethodTemplateSpecialization;
+  }
+};
+
 /// This holds information associated with Objective-C properties.
 struct ObjCPropertyRecord : APIRecord {
   /// The attributes associated with an Objective-C property.
@@ -790,6 +828,8 @@ struct SymbolReference {
       : Name(Name), USR(USR), Source(Source) {}
   SymbolReference(const APIRecord &Record)
       : Name(Record.Name), USR(Record.USR) {}
+  SymbolReference(const APIRecord *Record)
+      : Name(Record->Name), USR(Record->USR) {}
 
   /// Determine if this SymbolReference is empty.
   ///
@@ -1058,10 +1098,21 @@ struct has_function_signature<GlobalFunctionTemplateRecord>
 template <>
 struct has_function_signature<GlobalFunctionTemplateSpecializationRecord>
     : public std::true_type {};
+template <>
+struct has_function_signature<CXXMethodTemplateRecord> : public std::true_type {
+};
+template <>
+struct has_function_signature<CXXMethodTemplateSpecializationRecord>
+    : public std::true_type {};
 
 template <typename RecordTy> struct has_access : public std::false_type {};
 template <> struct has_access<CXXMethodRecord> : public std::true_type {};
 template <> struct has_access<CXXFieldRecord> : public std::true_type {};
+template <>
+struct has_access<CXXMethodTemplateRecord> : public std::true_type {};
+template <>
+struct has_access<CXXMethodTemplateSpecializationRecord>
+    : public std::true_type {};
 
 template <typename RecordTy> struct has_template : public std::false_type {};
 template <> struct has_template<ClassTemplateRecord> : public std::true_type {};
@@ -1076,6 +1127,8 @@ struct has_template<GlobalVariableTemplatePartialSpecializationRecord>
     : public std::true_type {};
 template <>
 struct has_template<GlobalFunctionTemplateRecord> : public std::true_type {};
+template <>
+struct has_template<CXXMethodTemplateRecord> : public std::true_type {};
 
 /// APISet holds the set of API records collected from given inputs.
 class APISet {
@@ -1246,6 +1299,20 @@ public:
       FunctionSignature Signature, bool IsConstructor, AccessControl Access,
       bool IsFromSystemHeader);
 
+  CXXMethodTemplateRecord *addCXXMethodTemplate(
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, const DocComment &Comment,
+      DeclarationFragments Declaration, DeclarationFragments SubHeading,
+      FunctionSignature Signature, AccessControl Access, Template Template,
+      bool IsFromSystemHeader);
+
+  CXXMethodTemplateSpecializationRecord *addCXXMethodTemplateSpec(
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, const DocComment &Comment,
+      DeclarationFragments Declaration, DeclarationFragments SubHeading,
+      FunctionSignature Signature, AccessControl Access,
+      bool IsFromSystemHeader);
+
   ConceptRecord *addConcept(StringRef Name, StringRef USR, PresumedLoc Loc,
                             AvailabilitySet Availability,
                             const DocComment &Comment,
@@ -1401,6 +1468,13 @@ public:
   const RecordMap<EnumRecord> &getEnums() const { return Enums; }
   const RecordMap<StructRecord> &getStructs() const { return Structs; }
   const RecordMap<CXXClassRecord> &getCXXClasses() const { return CXXClasses; }
+  const RecordMap<CXXMethodTemplateRecord> &getCXXMethodTemplates() const {
+    return CXXMethodTemplates;
+  }
+  const RecordMap<CXXMethodTemplateSpecializationRecord> &
+  getCXXMethodTemplateSpecializations() const {
+    return CXXMethodTemplateSpecializations;
+  }
   const RecordMap<ConceptRecord> &getConcepts() const { return Concepts; }
   const RecordMap<ClassTemplateRecord> &getClassTemplates() const {
     return ClassTemplates;
@@ -1480,6 +1554,9 @@ private:
   RecordMap<EnumRecord> Enums;
   RecordMap<StructRecord> Structs;
   RecordMap<CXXClassRecord> CXXClasses;
+  RecordMap<CXXMethodTemplateRecord> CXXMethodTemplates;
+  RecordMap<CXXMethodTemplateSpecializationRecord>
+      CXXMethodTemplateSpecializations;
   RecordMap<ClassTemplateRecord> ClassTemplates;
   RecordMap<ClassTemplateSpecializationRecord> ClassTemplateSpecializations;
   RecordMap<ClassTemplatePartialSpecializationRecord>
