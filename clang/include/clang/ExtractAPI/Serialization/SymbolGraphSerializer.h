@@ -175,6 +175,10 @@ public:
   void visitClassTemplatePartialSpecRecord(
       const ClassTemplatePartialSpecRecord &Record);
 
+  void visitMethodTemplateRecord(const CXXMethodTemplateRecord &Record);
+
+  void visitMethodTemplateSpecRecord(const CXXMethodTemplateSpecRecord &Record);
+
   void visitConceptRecord(const ConceptRecord &Record);
 
   void
