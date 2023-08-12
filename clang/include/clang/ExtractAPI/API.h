@@ -81,6 +81,7 @@ struct APIRecord {
     RK_Concept,
     RK_CXXStaticMethod,
     RK_CXXInstanceMethod,
+    RK_ConversionMethod,
     RK_CXXConstructorMethod,
     RK_CXXDestructorMethod,
     RK_CXXMethodTemplate,
@@ -536,6 +537,26 @@ struct CXXInstanceMethodRecord : CXXMethodRecord {
 
   static bool classof(const APIRecord *Record) {
     return Record->getKind() == RK_CXXInstanceMethod;
+  }
+
+private:
+  virtual void anchor();
+};
+
+struct ConversionMethodRecord : CXXMethodRecord {
+  ConversionMethodRecord(StringRef USR, StringRef Name, PresumedLoc Loc,
+                         AvailabilitySet Availabilities,
+                         const DocComment &Comment,
+                         DeclarationFragments Declaration,
+                         DeclarationFragments SubHeading,
+                         FunctionSignature Signature, AccessControl Access,
+                         bool IsFromSystemHeader)
+      : CXXMethodRecord(RK_CXXInstanceMethod, USR, Name, Loc,
+                        std::move(Availabilities), Comment, Declaration,
+                        SubHeading, Signature, Access, IsFromSystemHeader) {}
+
+  static bool classof(const APIRecord *Record) {
+    return Record->getKind() == RK_ConversionMethod;
   }
 
 private:
@@ -1015,6 +1036,10 @@ struct has_function_signature<ObjCClassMethodRecord> : public std::true_type {};
 template <>
 struct has_function_signature<CXXMethodRecord> : public std::true_type {};
 template <>
+struct has_function_signature<CXXInstanceMethodRecord> : public std::true_type {};
+template <>
+struct has_function_signature<CXXStaticMethodRecord> : public std::true_type {};
+template <>
 struct has_function_signature<GlobalFunctionTemplateRecord>
     : public std::true_type {};
 template <>
@@ -1029,6 +1054,8 @@ struct has_function_signature<CXXMethodTemplateSpecRecord>
 
 template <typename RecordTy> struct has_access : public std::false_type {};
 template <> struct has_access<CXXMethodRecord> : public std::true_type {};
+template <> struct has_access<CXXInstanceMethodRecord> : public std::true_type {};
+template <> struct has_access<CXXStaticMethodRecord> : public std::true_type {};
 template <> struct has_access<CXXFieldRecord> : public std::true_type {};
 template <>
 struct has_access<CXXMethodTemplateRecord> : public std::true_type {};
@@ -1159,7 +1186,7 @@ public:
                  DeclarationFragments SubHeading, SymbolReference Context,
                  AccessControl Access, bool IsFromSystemHeaderg);
 
-  CXXFieldRecord *addCXXField(CXXClassRecord *CXXClass, StringRef Name,
+  CXXFieldRecord *addCXXField(APIRecord *CXXClass, StringRef Name,
                               StringRef USR, PresumedLoc Loc,
                               AvailabilitySet Availabilities,
                               const DocComment &Comment,
@@ -1212,18 +1239,32 @@ public:
       DeclarationFragments SubHeading, Template Template,
       bool IsFromSystemHeader);
 
-  CXXMethodRecord *
-  addCXXMethod(CXXClassRecord *CXXClassRecord, StringRef Name, StringRef USR,
-               PresumedLoc Loc, AvailabilitySet Availability,
-               const DocComment &Comment, DeclarationFragments Declaration,
-               DeclarationFragments SubHeading, FunctionSignature Signature,
-               bool IsStatic, AccessControl Access, bool IsFromSystemHeader);
+  CXXMethodRecord *addCXXMethod(
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, const DocComment &Comment,
+      DeclarationFragments Declaration, DeclarationFragments SubHeading,
+      bool IsStatic, FunctionSignature Signature, AccessControl Access,
+      bool IsFromSystemHeader);
+
+  CXXMethodRecord *addCXXInstanceMethod(
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, const DocComment &Comment,
+      DeclarationFragments Declaration, DeclarationFragments SubHeading,
+      FunctionSignature Signature, AccessControl Access,
+      bool IsFromSystemHeader);
+
+  CXXMethodRecord *addCXXStaticMethod(
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, const DocComment &Comment,
+      DeclarationFragments Declaration, DeclarationFragments SubHeading,
+      FunctionSignature Signature, AccessControl Access,
+      bool IsFromSystemHeader);
 
   CXXMethodRecord *addCXXSpecialMethod(
-      CXXClassRecord *CXXClassRecord, StringRef Name, StringRef USR,
-      PresumedLoc Loc, AvailabilitySet Availability, const DocComment &Comment,
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
+      AvailabilitySet Availability, const DocComment &Comment,
       DeclarationFragments Declaration, DeclarationFragments SubHeading,
-      FunctionSignature Signature, bool IsConstructor, AccessControl Access,
+      FunctionSignature Signature, AccessControl Access,
       bool IsFromSystemHeader);
 
   CXXMethodTemplateRecord *addCXXMethodTemplate(
@@ -1398,6 +1439,16 @@ public:
   const RecordMap<CXXMethodTemplateRecord> &getCXXMethodTemplates() const {
     return CXXMethodTemplates;
   }
+  const RecordMap<CXXInstanceMethodRecord> &getCXXInstanceMethods() const {
+    return CXXInstanceMethods;
+  }
+  const RecordMap<CXXStaticMethodRecord> &getCXXStaticMethods() const {
+    return CXXStaticMethods;
+  }
+  const RecordMap<ConversionMethodRecord> &getConversionMethods() const {
+    return ConversionMethods;
+  }
+  const RecordMap<CXXFieldRecord> &getCXXFields() const { return CXXFields; }
   const RecordMap<CXXMethodTemplateSpecRecord> &
   getCXXMethodTemplateSpecializations() const {
     return CXXMethodTemplateSpecializations;
@@ -1484,6 +1535,11 @@ private:
   RecordMap<EnumRecord> Enums;
   RecordMap<StructRecord> Structs;
   RecordMap<CXXClassRecord> CXXClasses;
+  RecordMap<CXXFieldRecord> CXXFields;
+  RecordMap<ConversionMethodRecord> ConversionMethods;
+  RecordMap<CXXMethodRecord> CXXMethods;
+  RecordMap<CXXInstanceMethodRecord> CXXInstanceMethods;
+  RecordMap<CXXStaticMethodRecord> CXXStaticMethods;
   RecordMap<CXXMethodTemplateRecord> CXXMethodTemplates;
   RecordMap<CXXMethodTemplateSpecRecord> CXXMethodTemplateSpecializations;
   RecordMap<CXXFieldTemplateRecord> CXXFieldTemplates;
