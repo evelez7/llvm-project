@@ -157,6 +157,7 @@ struct APIRecord {
   /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
   enum RecordKind {
     RK_Unknown,
+    RK_Namespace,
     RK_GlobalFunction,
     RK_GlobalFunctionTemplate,
     RK_GlobalFunctionTemplateSpecialization,
@@ -265,6 +266,20 @@ public:
 
   // Pure virtual destructor to make APIRecord abstract
   virtual ~APIRecord() = 0;
+};
+
+struct NamespaceRecord : APIRecord {
+  NamespaceRecord(StringRef USR, StringRef Name, PresumedLoc Loc,
+                  AvailabilitySet Availabilities, LinkageInfo Linkage,
+                  const DocComment &Comment, DeclarationFragments Declaration,
+                  DeclarationFragments SubHeading, bool IsFromSystemHeader)
+      : APIRecord(RK_Namespace, USR, Name, Loc, std::move(Availabilities),
+                  Linkage, Comment, Declaration, SubHeading,
+                  IsFromSystemHeader) {}
+
+  static bool classof(const APIRecord *Record) {
+    return Record->getKind() == RK_Namespace;
+  }
 };
 
 /// This holds information associated with global functions.
@@ -900,15 +915,17 @@ struct CXXClassRecord : APIRecord {
   SmallVector<std::unique_ptr<CXXFieldRecord>> Fields;
   SmallVector<std::unique_ptr<CXXMethodRecord>> Methods;
   SmallVector<SymbolReference> Bases;
+  AccessControl Access;
 
   CXXClassRecord(StringRef USR, StringRef Name, PresumedLoc Loc,
                  AvailabilitySet Availabilities, const DocComment &Comment,
                  DeclarationFragments Declaration,
                  DeclarationFragments SubHeading, RecordKind Kind,
-                 bool IsFromSystemHeader)
+                 AccessControl Access, bool IsFromSystemHeader)
       : APIRecord(Kind, USR, Name, Loc, std::move(Availabilities),
                   LinkageInfo::none(), Comment, Declaration, SubHeading,
-                  IsFromSystemHeader) {}
+                  IsFromSystemHeader),
+        Access(Access) {}
 
   static bool classof(const APIRecord *Record) {
     return (Record->getKind() == RK_CXXClass);
@@ -925,9 +942,9 @@ struct ClassTemplateRecord : CXXClassRecord {
                       AvailabilitySet Availabilities, const DocComment &Comment,
                       DeclarationFragments Declaration,
                       DeclarationFragments SubHeading, Template Template,
-                      bool IsFromSystemHeader)
+                      AccessControl Access, bool IsFromSystemHeader)
       : CXXClassRecord(USR, Name, Loc, std::move(Availabilities), Comment,
-                       Declaration, SubHeading, RK_ClassTemplate,
+                       Declaration, SubHeading, RK_ClassTemplate, Access,
                        IsFromSystemHeader),
         Templ(Template) {}
 
@@ -937,16 +954,14 @@ struct ClassTemplateRecord : CXXClassRecord {
 };
 
 struct ClassTemplateSpecializationRecord : CXXClassRecord {
-  ClassTemplateSpecializationRecord(StringRef USR, StringRef Name,
-                                    PresumedLoc Loc,
-                                    AvailabilitySet Availabilities,
-                                    const DocComment &Comment,
-                                    DeclarationFragments Declaration,
-                                    DeclarationFragments SubHeading,
-                                    bool IsFromSystemHeader)
+  ClassTemplateSpecializationRecord(
+      StringRef USR, StringRef Name, PresumedLoc Loc,
+      AvailabilitySet Availabilities, const DocComment &Comment,
+      DeclarationFragments Declaration, DeclarationFragments SubHeading,
+      AccessControl Access, bool IsFromSystemHeader)
       : CXXClassRecord(USR, Name, Loc, std::move(Availabilities), Comment,
                        Declaration, SubHeading, RK_ClassTemplateSpecialization,
-                       IsFromSystemHeader) {}
+                       Access, IsFromSystemHeader) {}
 
   static bool classof(const APIRecord *Record) {
     return Record->getKind() == RK_ClassTemplateSpecialization;
@@ -959,10 +974,10 @@ struct ClassTemplatePartialSpecializationRecord : CXXClassRecord {
       StringRef USR, StringRef Name, PresumedLoc Loc,
       AvailabilitySet Availabilities, const DocComment &Comment,
       DeclarationFragments Declaration, DeclarationFragments SubHeading,
-      Template Template, bool IsFromSystemHeader)
+      Template Template, AccessControl Access, bool IsFromSystemHeader)
       : CXXClassRecord(USR, Name, Loc, std::move(Availabilities), Comment,
                        Declaration, SubHeading, RK_ClassTemplateSpecialization,
-                       IsFromSystemHeader),
+                       Access, IsFromSystemHeader),
         Templ(Template) {}
 
   static bool classof(const APIRecord *Record) {
@@ -1138,6 +1153,13 @@ struct has_access<CXXMethodTemplateSpecializationRecord>
     : public std::true_type {};
 template <>
 struct has_access<CXXFieldTemplateRecord> : public std::true_type {};
+template <> struct has_access<CXXClassRecord> : public std::true_type {};
+template <> struct has_access<ClassTemplateRecord> : public std::true_type {};
+template <>
+struct has_access<ClassTemplateSpecializationRecord> : public std::true_type {};
+template <>
+struct has_access<ClassTemplatePartialSpecializationRecord>
+    : public std::true_type {};
 
 template <typename RecordTy> struct has_template : public std::false_type {};
 template <> struct has_template<ClassTemplateRecord> : public std::true_type {};
@@ -1160,6 +1182,13 @@ struct has_template<CXXFieldTemplateRecord> : public std::true_type {};
 /// APISet holds the set of API records collected from given inputs.
 class APISet {
 public:
+  NamespaceRecord *addNamespace(APIRecord *Parent, StringRef Name,
+                                StringRef USR, PresumedLoc Loc,
+                                AvailabilitySet Availability,
+                                LinkageInfo Linkage, const DocComment &Comment,
+                                DeclarationFragments Declaration,
+                                DeclarationFragments SubHeading,
+                                bool IsFromSystemHeaderg);
   /// Create and add a global variable record into the API set.
   ///
   /// Note: the caller is responsible for keeping the StringRef \p Name and
@@ -1277,31 +1306,33 @@ public:
       DeclarationFragments Declaration, DeclarationFragments SubHeading,
       AccessControl Access, Template Template, bool IsFromSystemHeader);
 
-  CXXClassRecord *
-  addCXXClass(StringRef Name, StringRef USR, PresumedLoc Loc,
-              AvailabilitySet Availability, const DocComment &Comment,
-              DeclarationFragments Declaration, DeclarationFragments SubHeading,
-              APIRecord::RecordKind Kind, bool IsFromSystemHeader);
+  CXXClassRecord *addCXXClass(APIRecord *Parent, StringRef Name, StringRef USR,
+                              PresumedLoc Loc, AvailabilitySet Availability,
+                              const DocComment &Comment,
+                              DeclarationFragments Declaration,
+                              DeclarationFragments SubHeading,
+                              APIRecord::RecordKind Kind, AccessControl Access,
+                              bool IsFromSystemHeader);
 
   ClassTemplateRecord *
-  addClassTemplate(StringRef Name, StringRef USR, PresumedLoc Loc,
-                   AvailabilitySet Availability, const DocComment &Comment,
-                   DeclarationFragments Declaration,
+  addClassTemplate(APIRecord *Parent, StringRef Name, StringRef USR,
+                   PresumedLoc Loc, AvailabilitySet Availability,
+                   const DocComment &Comment, DeclarationFragments Declaration,
                    DeclarationFragments SubHeading, Template Template,
-                   bool IsFromSystemHeader);
+                   AccessControl Access, bool IsFromSystemHeader);
 
   ClassTemplateSpecializationRecord *addClassTemplateSpecialization(
-      StringRef Name, StringRef USR, PresumedLoc Loc,
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
       AvailabilitySet Availability, const DocComment &Comment,
       DeclarationFragments Declaration, DeclarationFragments SubHeading,
-      bool IsFromSystemHeader);
+      AccessControl Access, bool IsFromSystemHeader);
 
   ClassTemplatePartialSpecializationRecord *
   addClassTemplatePartialSpecialization(
-      StringRef Name, StringRef USR, PresumedLoc Loc,
+      APIRecord *Parent, StringRef Name, StringRef USR, PresumedLoc Loc,
       AvailabilitySet Availability, const DocComment &Comment,
       DeclarationFragments Declaration, DeclarationFragments SubHeading,
-      Template Template, bool IsFromSystemHeader);
+      Template Template, AccessControl Access, bool IsFromSystemHeader);
 
   GlobalVariableTemplateSpecializationRecord *
   addGlobalVariableTemplateSpecialization(
@@ -1476,6 +1507,7 @@ public:
   /// Get the language used by the APIs.
   Language getLanguage() const { return Lang; }
 
+  const RecordMap<NamespaceRecord> &getNamespaces() const { return Namespaces; }
   const RecordMap<GlobalFunctionRecord> &getGlobalFunctions() const {
     return GlobalFunctions;
   }
@@ -1589,6 +1621,7 @@ private:
   const Language Lang;
 
   llvm::DenseMap<StringRef, APIRecord *> USRBasedLookupTable;
+  RecordMap<NamespaceRecord> Namespaces;
   RecordMap<GlobalFunctionRecord> GlobalFunctions;
   RecordMap<GlobalFunctionTemplateRecord> GlobalFunctionTemplates;
   RecordMap<GlobalFunctionTemplateSpecializationRecord>

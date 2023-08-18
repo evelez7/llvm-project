@@ -34,6 +34,18 @@
 namespace clang {
 namespace extractapi {
 namespace impl {
+namespace {
+inline SmallString<128> DetermineParentDecl(const DeclContext *Context) {
+  SmallString<128> ParentUSR;
+  if (Context->getDeclKind() == Decl::Namespace)
+    index::generateUSRForDecl(dyn_cast<NamespaceDecl>(Context), ParentUSR);
+
+  if (Context->getDeclKind() == Decl::CXXRecord)
+    index::generateUSRForDecl(dyn_cast<CXXRecordDecl>(Context), ParentUSR);
+
+  return ParentUSR;
+}
+} // namespace
 
 template <typename Derived>
 class ExtractAPIVisitorBase : public RecursiveASTVisitor<Derived> {
@@ -73,6 +85,10 @@ public:
       const VarTemplatePartialSpecializationDecl *Decl);
 
   bool WalkUpFromFunctionTemplateDecl(const FunctionTemplateDecl *Decl);
+
+  bool WalkUpFromNamespaceDecl(const NamespaceDecl *Decl);
+
+  bool VisitNamespaceDecl(const NamespaceDecl *Decl);
 
   bool VisitRecordDecl(const RecordDecl *Decl);
 
@@ -448,6 +464,51 @@ bool ExtractAPIVisitorBase<Derived>::WalkUpFromFunctionTemplateDecl(
 }
 
 template <typename Derived>
+bool ExtractAPIVisitorBase<Derived>::WalkUpFromNamespaceDecl(
+    const NamespaceDecl *Decl) {
+  getDerivedExtractAPIVisitor().VisitNamespaceDecl(Decl);
+  return true;
+}
+
+template <typename Derived>
+bool ExtractAPIVisitorBase<Derived>::VisitNamespaceDecl(
+    const NamespaceDecl *Decl) {
+
+  if (!getDerivedExtractAPIVisitor().shouldDeclBeIncluded(Decl))
+    return true;
+  if (Decl->isAnonymousNamespace())
+    return true;
+  StringRef Name = Decl->getName();
+  StringRef USR = API.recordUSR(Decl);
+  LinkageInfo Linkage = Decl->getLinkageAndVisibility();
+  PresumedLoc Loc =
+      Context.getSourceManager().getPresumedLoc(Decl->getLocation());
+  DocComment Comment;
+  if (auto *RawComment =
+          getDerivedExtractAPIVisitor().fetchRawCommentForDecl(Decl))
+    Comment = RawComment->getFormattedLines(Context.getSourceManager(),
+                                            Context.getDiagnostics());
+
+  // Build declaration fragments and sub-heading for the struct.
+  DeclarationFragments Declaration =
+      DeclarationFragmentsBuilder::getFragmentsForNamespace(Decl);
+  DeclarationFragments SubHeading =
+      DeclarationFragmentsBuilder::getSubHeading(Decl);
+  SmallString<128> ParentUSR;
+  APIRecord *Parent;
+  if (Decl->getDeclContext()->getDeclKind() == Decl::TranslationUnit)
+    Parent = nullptr;
+  else {
+    ParentUSR = DetermineParentDecl(Decl->getDeclContext());
+    Parent = API.findRecordForUSR(ParentUSR);
+  }
+  API.addNamespace(Parent, Name, USR, Loc, AvailabilitySet(Decl), Linkage,
+                   Comment, Declaration, SubHeading, isInSystemHeader(Decl));
+
+  return true;
+}
+
+template <typename Derived>
 bool ExtractAPIVisitorBase<Derived>::VisitRecordDecl(const RecordDecl *Decl) {
   if (!getDerivedExtractAPIVisitor().shouldDeclBeIncluded(Decl))
     return true;
@@ -512,7 +573,16 @@ bool ExtractAPIVisitorBase<Derived>::VisitCXXRecordDecl(
     Kind = APIRecord::RecordKind::RK_Struct;
   else
     Kind = APIRecord::RecordKind::RK_CXXClass;
+  auto Access = DeclarationFragmentsBuilder::getAccessControl(Decl);
 
+  SmallString<128> ParentUSR;
+  APIRecord *Parent;
+  if (Decl->getDeclContext()->getDeclKind() == Decl::TranslationUnit)
+    Parent = nullptr;
+  else {
+    ParentUSR = DetermineParentDecl(Decl->getDeclContext());
+    Parent = API.findRecordForUSR(ParentUSR);
+  }
   CXXClassRecord *CXXClassRecord;
   if (Decl->getDescribedClassTemplate()) {
     // Inject template fragments before class fragments.
@@ -521,12 +591,13 @@ bool ExtractAPIVisitorBase<Derived>::VisitCXXRecordDecl(
         DeclarationFragmentsBuilder::getFragmentsForRedeclarableTemplate(
             Decl->getDescribedClassTemplate()));
     CXXClassRecord = API.addClassTemplate(
-        Name, USR, Loc, AvailabilitySet(Decl), Comment, Declaration, SubHeading,
-        Template(Decl->getDescribedClassTemplate()), isInSystemHeader(Decl));
+        Parent, Name, USR, Loc, AvailabilitySet(Decl), Comment, Declaration,
+        SubHeading, Template(Decl->getDescribedClassTemplate()), Access,
+        isInSystemHeader(Decl));
   } else
-    CXXClassRecord =
-        API.addCXXClass(Name, USR, Loc, AvailabilitySet(Decl), Comment,
-                        Declaration, SubHeading, Kind, isInSystemHeader(Decl));
+    CXXClassRecord = API.addCXXClass(
+        Parent, Name, USR, Loc, AvailabilitySet(Decl), Comment, Declaration,
+        SubHeading, Kind, Access, isInSystemHeader(Decl));
 
   CXXClassRecord->Bases = getBases(Decl);
 
@@ -708,8 +779,17 @@ bool ExtractAPIVisitorBase<Derived>::VisitClassTemplateSpecializationDecl(
   DeclarationFragments SubHeading =
       DeclarationFragmentsBuilder::getSubHeading(Decl);
 
+  SmallString<128> ParentUSR;
+  APIRecord *Parent;
+  if (Decl->getDeclContext()->getDeclKind() == Decl::TranslationUnit)
+    Parent = nullptr;
+  else {
+    ParentUSR = DetermineParentDecl(Decl->getDeclContext());
+    Parent = API.findRecordForUSR(ParentUSR);
+  }
   auto *ClassTemplateSpecializationRecord = API.addClassTemplateSpecialization(
-      Name, USR, Loc, AvailabilitySet(Decl), Comment, Declaration, SubHeading,
+      Parent, Name, USR, Loc, AvailabilitySet(Decl), Comment, Declaration,
+      SubHeading, DeclarationFragmentsBuilder::getAccessControl(Decl),
       isInSystemHeader(Decl));
 
   ClassTemplateSpecializationRecord->Bases = getBases(Decl);
@@ -738,10 +818,20 @@ bool ExtractAPIVisitorBase<Derived>::
   DeclarationFragments SubHeading =
       DeclarationFragmentsBuilder::getSubHeading(Decl);
 
+  SmallString<128> ParentUSR;
+  APIRecord *Parent;
+  if (Decl->getDeclContext()->getDeclKind() == Decl::TranslationUnit)
+    Parent = nullptr;
+  else {
+    ParentUSR = DetermineParentDecl(Decl->getDeclContext());
+    Parent = API.findRecordForUSR(ParentUSR);
+  }
   auto *ClassTemplatePartialSpecRecord =
       API.addClassTemplatePartialSpecialization(
-          Name, USR, Loc, AvailabilitySet(Decl), Comment, Declaration,
-          SubHeading, Template(Decl), isInSystemHeader(Decl));
+          Parent, Name, USR, Loc, AvailabilitySet(Decl), Comment, Declaration,
+          SubHeading, Template(Decl),
+          DeclarationFragmentsBuilder::getAccessControl(Decl),
+          isInSystemHeader(Decl));
 
   ClassTemplatePartialSpecRecord->Bases = getBases(Decl);
 
