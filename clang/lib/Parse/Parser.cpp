@@ -16,6 +16,7 @@
 #include "clang/AST/ASTLambda.h"
 #include "clang/AST/DeclTemplate.h"
 #include "clang/Basic/FileManager.h"
+#include "clang/Basic/TokenKinds.h"
 #include "clang/Parse/ParseDiagnostic.h"
 #include "clang/Parse/RAIIObjectsForParser.h"
 #include "clang/Sema/DeclSpec.h"
@@ -2060,9 +2061,19 @@ bool Parser::TryAnnotateTypeOrScopeToken(
       return true;
     }
 
+    bool TemplateKWPresent = false;
+    if (Tok.is(tok::kw_template)) {
+      ConsumeToken();
+      TemplateKWPresent = true;
+    }
+
     TypeResult Ty;
     if (Tok.is(tok::identifier)) {
-      // FIXME: check whether the next token is '<', first!
+      if (TemplateKWPresent && NextToken().isNot(tok::less)) {
+        Diag(Tok.getLocation(),
+             diag::missing_template_arg_list_after_template_kw);
+        return true;
+      }
       Ty = Actions.ActOnTypenameType(getCurScope(), TypenameLoc, SS,
                                      *Tok.getIdentifierInfo(),
                                      Tok.getLocation());
