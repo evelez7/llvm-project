@@ -1416,6 +1416,11 @@ ParsedTemplateArgument Parser::ParseTemplateTemplateArgument() {
     SourceLocation TemplateKWLoc = ConsumeToken();
 
     if (Tok.is(tok::identifier)) {
+      if (Tok.isNot(tok::less)) {
+        // this is the case for template<typename X::template U>
+        // Diagnose the alias template case aka using X::template ...
+        Diag(TemplateKWLoc, diag::missing_template_arg_list_after_template_kw);
+      }
       // We appear to have a dependent template name.
       UnqualifiedId Name;
       Name.setIdentifier(Tok.getIdentifierInfo(), Tok.getLocation());
@@ -1482,7 +1487,6 @@ ParsedTemplateArgument Parser::ParseTemplateArgument() {
   // up and annotate an identifier as an id-expression during disambiguation,
   // so enter the appropriate context for a constant expression template
   // argument before trying to disambiguate.
-
   EnterExpressionEvaluationContext EnterConstantEvaluated(
     Actions, Sema::ExpressionEvaluationContext::ConstantEvaluated,
     /*LambdaContextDecl=*/nullptr,
