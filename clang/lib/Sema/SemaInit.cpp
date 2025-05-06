@@ -18,6 +18,7 @@
 #include "clang/AST/ExprObjC.h"
 #include "clang/AST/IgnoreExpr.h"
 #include "clang/AST/TypeLoc.h"
+#include "clang/Basic/DiagnosticSema.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Basic/Specifiers.h"
 #include "clang/Basic/TargetInfo.h"

@@ -2484,6 +2484,8 @@ def err_init_incomplete_type : Error<"initialization of incomplete type %0">;
 def err_list_init_in_parens : Error<
   "cannot initialize %select{non-class|reference}0 type %1 with a "
   "parenthesized initializer list">;
+def err_copy_list_initialize : Error<"cannot copy-list-initialize using an "
+  "explicit constructor">;
 
 def warn_uninit_const_reference : Warning<
   "variable %0 is uninitialized when passed as a const reference argument "

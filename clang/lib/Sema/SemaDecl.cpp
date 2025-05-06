@@ -13773,6 +13773,14 @@ void Sema::AddInitializerToDecl(Decl *RealDecl, Expr *Init, bool DirectInit) {
   ParenListExpr *CXXDirectInit = dyn_cast<ParenListExpr>(Init);
   bool IsParenListInit = false;
   if (!VDecl->isInvalidDecl()) {
+    // [dcl.init.list]p10
+    // Otherwise, if T is a reference type, a prvalue is generated. The prvalue
+    // initializes its result object by copy-list-initialization from the
+    // initializer list.
+    if (getLangOpts().CPlusPlus20 &&
+        !VDecl->getType().getTypePtr()->isBuiltinType() &&
+        isa<InitListExpr>(Init) && VDecl->getType()->isReferenceType())
+      DirectInit = false;
     InitializedEntity Entity = InitializedEntity::InitializeVariable(VDecl);
     InitializationKind Kind = InitializationKind::CreateForInit(
         VDecl->getLocation(), DirectInit, Init);
