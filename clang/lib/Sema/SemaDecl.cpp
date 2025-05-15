@@ -13777,9 +13777,11 @@ void Sema::AddInitializerToDecl(Decl *RealDecl, Expr *Init, bool DirectInit) {
     // Otherwise, if T is a reference type, a prvalue is generated. The prvalue
     // initializes its result object by copy-list-initialization from the
     // initializer list.
-    if (getLangOpts().CPlusPlus20 &&
-        !VDecl->getType().getTypePtr()->isBuiltinType() &&
-        isa<InitListExpr>(Init) && VDecl->getType()->isReferenceType())
+    if (!VDecl->getType().getTypePtr()->isBuiltinType() &&
+        isa<InitListExpr>(Init) &&
+        VDecl->getType()->isReferenceType() && !(
+            VDecl->getType()->isRValueReferenceType() &&
+            VDecl->getType()->getPointeeType()->isArrayType()))
       DirectInit = false;
     InitializedEntity Entity = InitializedEntity::InitializeVariable(VDecl);
     InitializationKind Kind = InitializationKind::CreateForInit(

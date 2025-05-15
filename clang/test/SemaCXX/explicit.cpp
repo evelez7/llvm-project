@@ -1,5 +1,5 @@
-// RUN: %clang_cc1 -fsyntax-only -verify -std=c++11 %s
-// RUN: %clang_cc1 -fsyntax-only -verify -std=c++2a %s
+// RUN: %clang_cc1 -fsyntax-only -verify=pre20,expected -std=c++11 %s
+// RUN: %clang_cc1 -fsyntax-only -verify=post20,expected -std=c++2a %s
 
 namespace Constructor {
 struct A {
@@ -35,7 +35,7 @@ B &&b2 = 0; // expected-error {{could not bind}}
 B &&b3(0); // expected-error {{could not bind}}
 B b4{0};
 B &&b5 = {0}; // expected-error {{chosen constructor is explicit}}
-B &&b6{0}; // post20-error {{chosen constructor is explicit in copy-initialization}}
+B &&b6{0}; // expected-error {{chosen constructor is explicit in copy-initialization}}
 
 struct S {
   template <bool b = true>
@@ -74,15 +74,15 @@ namespace Conversion {
   {
     // Taken from 12.3.2p2
     class X { X(); };
-    // post20-note@-1 {{candidate constructor (the implicit copy constructor) not viable: no known conversion from 'Z' to 'const X' for 1st argument}} 
-    // post20-note@-2 {{candidate constructor (the implicit move constructor) not viable: no known conversion from 'Z' to 'X' for 1st argument}}
-    // post20-note@-3 {{candidate constructor not viable: requires 0 arguments, but 1 was provided}}
+    // pre20-note@-1 {{candidate constructor (the implicit copy constructor) not viable: no known conversion from 'Z' to 'const X' for 1st argument}} 
+    // pre20-note@-2 {{candidate constructor (the implicit move constructor) not viable: no known conversion from 'Z' to 'X' for 1st argument}}
+    // pre20-note@-3 {{candidate constructor not viable: requires 0 arguments, but 1 was provided}}
     class Y { }; // expected-note+ {{candidate constructor (the implicit}}
 
     struct Z {
       explicit operator X() const;
       explicit operator Y() const; // expected-note 2{{not a candidate}}
-      explicit operator int() const; // expected-note {{not a candidate}} // post20-note {{explicit conversion function is not a candidate}}
+      explicit operator int() const; // expected-note {{not a candidate}} // expected-note {{explicit conversion function is not a candidate}}
     };
     
     Z z;
@@ -107,12 +107,12 @@ namespace Conversion {
     // conversion function is not considered.
     const Y y10{z}; // expected-error {{excess elements}}
     const Y& y11{z}; // expected-error {{excess elements}} expected-note {{in initialization of temporary of type 'const Y'}}
-    const int& y12{z}; // post20-error {{no viable conversion from 'Z' to 'const int'}}
+    const int& y12{z}; // expected-error {{no viable conversion from 'Z' to 'const int'}}
 
     // X is not an aggregate, so constructors are considered,
     // per 13.3.3.1/4 & DR1467.
     const X x1{z};
-    const X& x2{z};
+    const X& x2{z}; // pre20-error {{no matching constructor for initialization of 'const X &'}}
   }
   
   void testBool() {
@@ -121,8 +121,7 @@ namespace Conversion {
     };
 
     struct NotBool {
-      explicit operator bool();// expected-note {{conversion to integral type 'bool'}}
-      // pre20-note@-2 4{{explicit conversion function is not a candidate}}
+      explicit operator bool();// expected-note {{conversion to integral type 'bool'}} // expected-note 5{{explicit conversion function is not a candidate}}
     };
     Bool    b;
     NotBool n;
@@ -184,7 +183,7 @@ namespace Conversion {
     int directList3{b};
     int directList4{n}; // expected-error {{no viable conversion}}
     const bool &directList5{b};
-     const bool &directList6{n}; // post20-error {{no viable conversion from 'NotBool' to 'const bool'}}
+     const bool &directList6{n}; // expected-error {{no viable conversion from 'NotBool' to 'const bool'}}
     const int &directList7{b};
     const int &directList8{n}; // expected-error {{no viable conversion}}
     bool copy1 = b;

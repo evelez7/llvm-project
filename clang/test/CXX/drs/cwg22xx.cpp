@@ -136,13 +136,16 @@ namespace CheckAfterMerging2 {
 namespace cwg2267 { // cwg2267: no
 #if __cplusplus >= 201103L
 struct A {} a;
-struct B { explicit B(const A&); }; // #cwg2267-struct-B
+struct B { explicit B(const A&); }; // #cwg2267-struct-B // expected-note {{explicit constructor declared here}}
 
-struct D { D(); };
+struct D { D(); }; 
+// since-cxx11-note@-1 {{candidate constructor (the implicit move constructor) not viable: no known conversion from 'struct C' to 'D' for 1st argument}}
+// expected-note@-2 {{candidate constructor (the implicit copy constructor) not viable: no known conversion from 'struct C' to 'const D' for 1st argument}}
+// expected-note@-3 {{candidate constructor not viable: requires 0 arguments, but 1 was provided}}
 struct C { explicit operator D(); } c;
 
 B b1(a);
-const B &b2{a}; // FIXME ill-formed
+const B &b2{a}; // expected-error {{chosen constructor is explicit in copy-initialization}} 
 const B &b3(a);
 // since-cxx11-error@-1 {{no viable conversion from 'struct A' to 'const B'}}
 //   since-cxx11-note@#cwg2267-struct-B {{candidate constructor (the implicit copy constructor) not viable: no known conversion from 'struct A' to 'const B &' for 1st argument}}
@@ -150,7 +153,7 @@ const B &b3(a);
 //   since-cxx11-note@#cwg2267-struct-B {{explicit constructor is not a candidate}}
 
 D d1(c);
-const D &d2{c}; // FIXME ill-formed
+const D &d2{c}; // expected-error {{no matching constructor for initialization of 'const D &'}} 
 const D &d3(c); // FIXME ill-formed
 #endif
 } // namespace cwg2267
