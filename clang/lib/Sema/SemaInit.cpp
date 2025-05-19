@@ -4530,7 +4530,7 @@ static void TryConstructorInitialization(Sema &S,
 
   // Determine whether we are allowed to call explicit constructors or
   // explicit conversion operators.
-  bool AllowExplicit = Kind.AllowExplicit() || IsListInit;
+  bool AllowExplicit = Kind.AllowExplicit() || (IsListInit && (Entity.getKind() != clang::InitializedEntity::EK_Temporary));
   bool CopyInitialization = Kind.getKind() == InitializationKind::IK_Copy;
 
   //   - Otherwise, if T is a class type, constructors are considered. The

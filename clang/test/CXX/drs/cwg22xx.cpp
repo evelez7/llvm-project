@@ -145,7 +145,7 @@ struct D { D(); };
 struct C { explicit operator D(); } c;
 
 B b1(a);
-const B &b2{a}; // expected-error {{chosen constructor is explicit in copy-initialization}} 
+const B &b2{a}; // cxx11-error {{chosen constructor is explicit in copy-initialization}} 
 const B &b3(a);
 // since-cxx11-error@-1 {{no viable conversion from 'struct A' to 'const B'}}
 //   since-cxx11-note@#cwg2267-struct-B {{candidate constructor (the implicit copy constructor) not viable: no known conversion from 'struct A' to 'const B &' for 1st argument}}
