@@ -17,6 +17,7 @@ add_clang_library(clangDoc STATIC
   Serialize.cpp
   YAMLGenerator.cpp
   JSONGenerator.cpp
+  MDParser.cpp
 
   DEPENDS
   omp_gen

@@ -109,6 +109,8 @@ struct CommentInfo {
   bool SelfClosing = false; // Indicates if tag is self-closing (for HTML).
   bool Explicit = false;    // Indicates if the direction of a param is explicit
                             // (for (T)ParamCommand).
+  bool Markdown = false; // Comment contains Markdown tokens.
+  llvm::SmallVector<SmallString<16>, 4>
 };
 
 struct Reference {
