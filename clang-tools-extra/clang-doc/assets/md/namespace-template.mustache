@@ -1,0 +1,39 @@
+# {{Name}}
+
+{{#Description}}
+{{>Comments}}
+{{/Description}}
+
+{{#HasNamespaces}}
+## Namespaces
+
+{{#Namespaces}}
+{{/Namespaces}}
+{{/HasNamespaces}}
+{{#HasRecords}}
+## Records
+
+{{#Records}}
+* [{{Name}}]({{BasePath}})
+
+{{/Records}}
+{{/HasRecords}}
+{{#HasFunctions}}
+## Functions
+
+{{#Functions}}
+### {{Name}}
+
+{{>Function}}
+{{#Description}}
+{{>Comments}}
+{{/Description}}
+{{/Functions}}
+{{/HasFunctions}}
+{{#HasEnums}}
+## Enums
+
+{{#Enums}}
+|{{Name}}|
+{{/Enums}}
+{{/HasEnums}}

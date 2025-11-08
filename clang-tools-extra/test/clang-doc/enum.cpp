@@ -16,11 +16,20 @@
 
 // COM: FIXME: Add enum value comments to template
 
+// RUN: clang-doc --format=md_mustache --doxygen --output=%t --executor=standalone %s
+// RUN: FileCheck %s < %t/GlobalNamespace/index.md --check-prefix=MD-MUSTACHE-INDEX-LINE
+// RUN: FileCheck %s < %t/GlobalNamespace/index.md --check-prefix=MD-MUSTACHE-INDEX
+// RUN: FileCheck %s < %t/GlobalNamespace/Animals.md --check-prefix=MD-MUSTACHE-ANIMAL-LINE
+// RUN: FileCheck %s < %t/GlobalNamespace/Animals.md --check-prefix=MD-MUSTACHE-ANIMAL
+// RUN: FileCheck %s < %t/Vehicles/index.md --check-prefix=MD-MUSTACHE-VEHICLES-LINE
+// RUN: FileCheck %s < %t/Vehicles/index.md --check-prefix=MD-MUSTACHE-VEHICLES
+
 /**
  * @brief For specifying RGB colors
  */
 enum Color {
   // MD-INDEX-LINE: *Defined at {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp#[[@LINE-1]]*
+  // MD-MUSTACHE-INDEX-LINE: *Defined at {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp#[[@LINE-1]]*
   // HTML-INDEX-LINE-NOT: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
   Red,   ///< Comment 1
   Green, ///< Comment 2
@@ -34,6 +43,14 @@ enum Color {
 // MD-INDEX: | Green |
 // MD-INDEX: | Blue |
 // MD-INDEX: **brief** For specifying RGB colors
+
+// MD-MUSTACHE-INDEX: ## Enums
+// MD-MUSTACHE-INDEX: | enum Color |
+// MD-MUSTACHE-INDEX: --
+// MD-MUSTACHE-INDEX: | Red |
+// MD-MUSTACHE-INDEX: | Green |
+// MD-MUSTACHE-INDEX: | Blue |
+// MD-MUSTACHE-INDEX: **brief** For specifying RGB colors
 
 // HTML-INDEX:     <div>
 // HTML-INDEX:         <pre><code class="language-cpp code-clang-doc">enum Color</code></pre>
@@ -64,7 +81,8 @@ enum Color {
  */
 enum class Shapes {
   // MD-INDEX-LINE: *Defined at {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp#[[@LINE-1]]*
-  // HTML-INDEX-LINE-NOT: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
+  // HTML-INDEX-LINE: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
+  // MUSTACHE-INDEX-LINE-NOT: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
 
   /// Comment 1
   Circle,
@@ -79,6 +97,17 @@ enum class Shapes {
 // MD-INDEX: | Rectangle |
 // MD-INDEX: | Triangle |
 // MD-INDEX: **brief** Shape Types
+
+// HTML-INDEX: <th colspan="3">enum class Shapes</th>
+// HTML-INDEX: <td>Circle</td>
+// HTML-INDEX: <td>0</td>
+// HTML-INDEX: <p> Comment 1</p>
+// HTML-INDEX: <td>Rectangle</td>
+// HTML-INDEX: <td>1</td>
+// HTML-INDEX: <p> Comment 2</p>
+// HTML-INDEX: <td>Triangle</td>
+// HTML-INDEX: <td>2</td>
+// HTML-INDEX: <p> Comment 3</p>
 
 // COM: FIXME: Serialize "enum class" in template
 // HTML-INDEX:     <div>
@@ -108,6 +137,7 @@ enum class Shapes {
 // COM: FIXME: Add enums declared inside of classes to class template
 class Animals {
   // MD-ANIMAL-LINE: *Defined at {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp#[[@LINE-1]]*
+  // MD-MUSTACHE-ANIMAL-LINE: *Defined at {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp#[[@LINE-1]]*
   // HTML-ANIMAL-LINE: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
 public:
   /**
@@ -115,7 +145,8 @@ public:
    */
   enum AnimalType {
     // MD-ANIMAL-LINE: *Defined at {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp#[[@LINE-1]]*
-    // HTML-ANIMAL-LINE-NOT: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
+    // HTML-ANIMAL-LINE: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
+    // MUSTACHE-ANIMAL-LINE-NOT: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
     Dog,   ///< Man's best friend
     Cat,   ///< Man's other best friend
     Iguana ///< A lizard
@@ -144,13 +175,23 @@ public:
 // MD-ANIMAL: | Iguana |
 // MD-ANIMAL: **brief** specify what animal the class is
 
+// MD-MUSTACHE-ANIMAL: # class Animals
+// MD-MUSTACHE-ANIMAL: ## Enums
+// MD-MUSTACHE-ANIMAL: | enum AnimalType |
+// MD-MUSTACHE-ANIMAL: --
+// MD-MUSTACHE-ANIMAL: | Dog |
+// MD-MUSTACHE-ANIMAL: | Cat |
+// MD-MUSTACHE-ANIMAL: | Iguana |
+// MD-MUSTACHE-ANIMAL: **brief** specify what animal the class is
+
 namespace Vehicles {
 /**
  * @brief specify type of car
  */
 enum Car {
   // MD-VEHICLES-LINE: *Defined at {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp#[[@LINE-1]]*
-  // HTML-VEHICLES-LINE: Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp
+  // HTML-VEHICLES-LINE: <p>Defined at line [[@LINE-2]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp</p>
+  // MUSTACHE-VEHICLES-LINE: Defined at line [[@LINE-3]] of file {{.*}}clang-tools-extra{{[\/]}}test{{[\/]}}clang-doc{{[\/]}}enum.cpp
 
   Sedan,    ///< Comment 1
   SUV,      ///< Comment 2
@@ -168,6 +209,16 @@ enum Car {
 // MD-VEHICLES: | Pickup |
 // MD-VEHICLES: | Hatchback |
 // MD-VEHICLES: **brief** specify type of car
+
+// MD-MUSTACHE-VEHICLES: # namespace Vehicles
+// MD-MUSTACHE-VEHICLES: ## Enums
+// MD-MUSTACHE-VEHICLES: | enum Car |
+// MD-MUSTACHE-VEHICLES: --
+// MD-MUSTACHE-VEHICLES: | Sedan |
+// MD-MUSTACHE-VEHICLES: | SUV |
+// MD-MUSTACHE-VEHICLES: | Pickup |
+// MD-MUSTACHE-VEHICLES: | Hatchback |
+// MD-MUSTACHE-VEHICLES: **brief** specify type of car
 
 // HTML-VEHICLES:     <div>
 // HTML-VEHICLES:         <pre><code class="language-cpp code-clang-doc">enum Car</code></pre>
@@ -208,6 +259,12 @@ enum ColorUserSpecified {
 // MD-INDEX: | RedUserSpecified |
 // MD-INDEX: | GreenUserSpecified |
 // MD-INDEX: | BlueUserSpecified |
+
+// MD-MUSTACHE-INDEX: | enum ColorUserSpecified |
+// MD-MUSTACHE-INDEX: --
+// MD-MUSTACHE-INDEX: | RedUserSpecified |
+// MD-MUSTACHE-INDEX: | GreenUserSpecified |
+// MD-MUSTACHE-INDEX: | BlueUserSpecified |
 
 // HTML-INDEX:     <div>
 // HTML-INDEX:         <pre><code class="language-cpp code-clang-doc">enum ColorUserSpecified</code></pre>

@@ -164,6 +164,8 @@ Error MustacheGenerator::generateDocumentation(
 
 Expected<std::string> MustacheGenerator::getInfoTypeStr(Object *Info,
                                                         StringRef Filename) {
+  if (Filename == "all_files")
+    return "all_files";
   // Checking for a USR ensures that only the special top-level index file is
   // caught here, since it is not an Info.
   if (Filename == "index" && !Info->get("USR"))
@@ -248,5 +250,7 @@ void Generator::addInfoToIndex(Index &Idx, const doc::Info *Info) {
 [[maybe_unused]] static int MDGeneratorAnchorDest = MDGeneratorAnchorSource;
 [[maybe_unused]] static int HTMLGeneratorAnchorDest = HTMLGeneratorAnchorSource;
 [[maybe_unused]] static int JSONGeneratorAnchorDest = JSONGeneratorAnchorSource;
+[[maybe_unused]] static int MDMustacheGeneratorAnchorDest =
+    MDMustacheGeneratorAnchorSource;
 } // namespace doc
 } // namespace clang

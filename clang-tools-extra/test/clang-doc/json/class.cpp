@@ -127,6 +127,7 @@ private:
 // CHECK-NEXT:    ],
 // CHECK-NEXT:    "HasEnums": true,
 // CHECK-NEXT:    "HasPrivateMembers": true,
+// CHECK-NEXT:    "HasMembers": true,
 // CHECK-NEXT:    "HasPublicFunctions": true,
 // CHECK-NEXT:    "HasPublicMembers": true,
 // CHECK-NEXT:    "HasRecords": true,

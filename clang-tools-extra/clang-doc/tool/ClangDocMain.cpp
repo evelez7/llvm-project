@@ -111,7 +111,7 @@ Turn on time profiler. Generates clang-doc-tracing.json)"),
                                       llvm::cl::init(false),
                                       llvm::cl::cat(ClangDocCategory));
 
-enum OutputFormatTy { md, yaml, html, json };
+enum OutputFormatTy { md, yaml, html, json, mustache };
 
 static llvm::cl::opt<OutputFormatTy>
     FormatEnum("format", llvm::cl::desc("Format for outputted docs."),
@@ -122,7 +122,9 @@ static llvm::cl::opt<OutputFormatTy>
                                 clEnumValN(OutputFormatTy::html, "html",
                                            "Documentation in HTML format."),
                                 clEnumValN(OutputFormatTy::json, "json",
-                                           "Documentation in JSON format")),
+                                           "Documentation in JSON format"),
+                                clEnumValN(OutputFormatTy::mustache, "mustache",
+                                           "Documentation in MD format.")),
                llvm::cl::init(OutputFormatTy::yaml),
                llvm::cl::cat(ClangDocCategory));
 
@@ -138,6 +140,8 @@ static std::string getFormatString() {
     return "html";
   case OutputFormatTy::json:
     return "json";
+  case OutputFormatTy::mustache:
+    return "mustache";
   }
   llvm_unreachable("Unknown OutputFormatTy");
 }
@@ -179,8 +183,15 @@ static llvm::Error getHtmlFiles(const char *Argv0,
     llvm::outs() << "Asset path supply is not a directory: " << UserAssetPath
                  << " falling back to default\n";
   if (IsDir) {
-    if (auto Err = getAssetFiles(CDCtx))
-      return Err;
+    if (FormatEnum == OutputFormatTy::html) {
+      if (auto Err = getAssetFiles(CDCtx))
+        return Err;
+    }
+
+    if (FormatEnum == OutputFormatTy::mustache) {
+      getMustacheMDFiles(UserAssetPath, CDCtx);
+      return llvm::Error::success();
+    }
   }
   void *MainAddr = (void *)(intptr_t)getExecutablePath;
   std::string ClangDocPath = getExecutablePath(Argv0, MainAddr);
@@ -283,7 +294,8 @@ Example usage for a project using a compile commands database:
     clang::doc::ClangDocContext CDCtx(
         Executor->getExecutionContext(), ProjectName, PublicOnly, OutDirectory,
         SourceRoot, RepositoryUrl, RepositoryCodeLinePrefix, BaseDirectory,
-        {UserStylesheets.begin(), UserStylesheets.end()}, Diags, FTimeTrace);
+        {UserStylesheets.begin(), UserStylesheets.end()}, Diags,
+        getFormatString(), FTimeTrace);
 
     if (Format == "html")
       ExitOnErr(getHtmlFiles(argv[0], CDCtx));

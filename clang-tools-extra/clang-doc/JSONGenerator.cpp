@@ -11,6 +11,7 @@ namespace doc {
 class JSONGenerator : public Generator {
 public:
   static const char *Format;
+  bool Markdown = false;
 
   Error generateDocumentation(StringRef RootDir,
                               llvm::StringMap<std::unique_ptr<doc::Info>> Infos,
@@ -330,12 +331,22 @@ static void serializeReference(const Reference &Ref, Object &ReferenceObj) {
   if (!Ref.DocumentationFileName.empty())
     ReferenceObj["DocumentationFileName"] = Ref.DocumentationFileName;
 }
+static void serializeMDReference(const Reference &Ref, Object &ReferenceObj,
+                                 SmallString<64> BasePathRef) {
+  serializeReference(Ref, ReferenceObj);
+  SmallString<64> BasePath = Ref.getRelativeFilePath(BasePathRef);
+  sys::path::native(BasePath, sys::path::Style::posix);
+  sys::path::append(BasePath, sys::path::Style::posix,
+                    Ref.getFileBaseName() + ".md");
+  ReferenceObj["BasePath"] = BasePath;
+}
 
 // Although namespaces and records both have ScopeChildren, they serialize them
 // differently. Only enums, records, and typedefs are handled here.
-static void
-serializeCommonChildren(const ScopeChildren &Children, json::Object &Obj,
-                        const std::optional<StringRef> RepositoryUrl) {
+static void serializeCommonChildren(
+    const ScopeChildren &Children, json::Object &Obj,
+    const std::optional<StringRef> RepositoryUrl,
+    std::optional<SmallString<64>> BasePathOpt = std::nullopt) {
   static auto SerializeInfo = [RepositoryUrl](const auto &Info,
                                               Object &Object) {
     serializeInfo(Info, Object, RepositoryUrl);
@@ -350,7 +361,18 @@ serializeCommonChildren(const ScopeChildren &Children, json::Object &Obj,
     serializeArray(Children.Typedefs, Obj, "Typedefs", SerializeInfo);
 
   if (!Children.Records.empty()) {
-    serializeArray(Children.Records, Obj, "Records", SerializeReferenceLambda);
+    if (BasePathOpt) {
+      auto BasePath = BasePathOpt.value();
+      static auto SerializeMDReferenceLambda = [BasePath](const auto &Info,
+                                                          Object &Object) {
+        serializeMDReference(Info, Object, BasePath);
+      };
+      serializeArray(Children.Records, Obj, "Records",
+                     SerializeMDReferenceLambda);
+
+    } else
+      serializeArray(Children.Records, Obj, "Records",
+                     SerializeReferenceLambda);
     Obj["HasRecords"] = true;
   }
 }
@@ -553,6 +575,7 @@ static void serializeInfo(const RecordInfo &I, json::Object &Obj,
   }
 
   if (!I.Members.empty()) {
+    Obj["HasMembers"] = true;
     json::Value PublicMembersArray = Array();
     json::Array &PubMembersArrayRef = *PublicMembersArray.getAsArray();
     json::Value ProtectedMembersArray = Array();
@@ -620,7 +643,8 @@ static void serializeInfo(const VarInfo &I, json::Object &Obj,
 }
 
 static void serializeInfo(const NamespaceInfo &I, json::Object &Obj,
-                          const std::optional<StringRef> RepositoryUrl) {
+                          const std::optional<StringRef> RepositoryUrl,
+                          bool Markdown) {
   serializeCommonAttributes(I, Obj, RepositoryUrl);
   if (I.USR == GlobalNamespaceID)
     Obj["Name"] = "Global Namespace";
@@ -647,6 +671,11 @@ static void serializeInfo(const NamespaceInfo &I, json::Object &Obj,
   if (!I.Children.Variables.empty())
     serializeArray(I.Children.Variables, Obj, "Variables", SerializeInfo);
 
+  if (Markdown) {
+    SmallString<64> BasePath = I.getRelativeFilePath("");
+    serializeCommonChildren(I.Children, Obj, RepositoryUrl, BasePath);
+    return;
+  }
   serializeCommonChildren(I.Children, Obj, RepositoryUrl);
 }
 
@@ -662,6 +691,37 @@ static SmallString<16> determineFileName(Info *I, SmallString<128> &Path) {
   sys::path::append(Path, FileName + ".json");
   return FileName;
 }
+
+static std::vector<Index>
+preprocessCDCtxIndex(const std::vector<Index> &CDCtxIndex) {
+  std::vector<Index> Processed = CDCtxIndex;
+  for (auto &Entry : Processed) {
+    auto NewPath = Entry.getRelativeFilePath("");
+    sys::path::native(NewPath, sys::path::Style::posix);
+    sys::path::append(NewPath, sys::path::Style::posix,
+                      Entry.getFileBaseName() + ".md");
+    Entry.Path = NewPath;
+  }
+  return Processed;
+}
+
+/// Serialize ClangDocContext's Index for Markdown output
+static Error serializeAllFiles(const ClangDocContext &CDCtx,
+                               StringRef RootDir) {
+  json::Value ObjVal = Object();
+  Object *Obj = ObjVal.getAsObject();
+  serializeArray(preprocessCDCtxIndex(CDCtx.Idx.Children), *Obj, "Index",
+                 SerializeReferenceLambda);
+  std::error_code FileErr;
+  raw_fd_ostream RootOS(RootDir.str() + "/json/all_files.json", FileErr,
+                        sys::fs::OF_Text);
+  if (FileErr)
+    return createFileError(
+        "cannot open file " + RootDir.str() + "/json/all_files.json", FileErr);
+  RootOS << llvm::formatv("{0:2}", ObjVal);
+  return Error::success();
+}
+
 
 // Creates a JSON file above the global namespace directory.
 // An index can be used to create the top-level HTML index page or the Markdown
@@ -735,6 +795,14 @@ Error JSONGenerator::generateDocumentation(
     Info->DocumentationFileName = FileName;
   }
 
+  if (CDCtx.Format == "md_mustache") {
+    Markdown = true;
+    if (auto Err = serializeAllFiles(CDCtx, RootDir))
+      return Err;
+    if (auto Err = serializeIndex(CDCtx, RootDir, CDCtx.ProjectName))
+      return Err;
+  }
+
   for (const auto &Group : FileToInfos) {
     std::error_code FileErr;
     raw_fd_ostream InfoOS(Group.getKey(), FileErr, sys::fs::OF_Text);
@@ -755,7 +823,8 @@ Error JSONGenerator::generateDocForInfo(Info *I, raw_ostream &OS,
 
   switch (I->IT) {
   case InfoType::IT_namespace:
-    serializeInfo(*static_cast<NamespaceInfo *>(I), Obj, CDCtx.RepositoryUrl);
+    serializeInfo(*static_cast<NamespaceInfo *>(I), Obj, CDCtx.RepositoryUrl,
+                  Markdown);
     break;
   case InfoType::IT_record:
     serializeInfo(*static_cast<RecordInfo *>(I), Obj, CDCtx.RepositoryUrl);

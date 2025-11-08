@@ -12,6 +12,9 @@
 // RUN: cat %t/docs/html/GlobalNamespace/_ZTV5tuple.html | FileCheck %s --check-prefix=HTML-STRUCT
 // RUN: cat %t/docs/html/GlobalNamespace/index.html | FileCheck %s --check-prefix=HTML
 
+// RUN: clang-doc --doxygen --executor=standalone %s -output=%t/docs --format=md_mustache
+// RUN: cat %t/docs/GlobalNamespace/index.md | FileCheck %s --check-prefix=MD-MUSTACHE
+
 // YAML: ---
 // YAML-NEXT: USR:             '{{([0-9A-F]{40})}}'
 // YAML-NEXT: ChildRecords:
@@ -23,6 +26,9 @@
 
 // MD: # Global Namespace
 // MD: ## Functions
+
+// MD-MUSTACHE: # Global Namespace
+// MD-MUSTACHE: ## Functions
 
 template <class... T>
 void ParamPackFunction(T... args);
@@ -81,6 +87,9 @@ void ParamPackFunction(T... args);
 // HTML-NEXT:          <p>Defined at line of file </p>
 // HTML-NEXT:      </div>
 // HTML-NEXT:  </div>
+
+// MD-MUSTACHE: ### ParamPackFunction
+// MD-MUSTACHE: *void ParamPackFunction(T... args)*
 
 template <typename T, int U = 1>
 void function(T x) {}
@@ -143,6 +152,10 @@ void function(T x) {}
 // HTML-NEXT:      </div>
 // HTML-NEXT:  </div>
 
+
+// MD-MUSTACHE: ### function
+// MD-MUSTACHE: *void function(T x)*
+// MD-MUSTACHE: *Defined at {{.*}}templates.cpp#[[# @LINE - 23]]*
 
 template <>
 void function<bool, 0>(bool x) {}
@@ -209,6 +222,10 @@ void function<bool, 0>(bool x) {}
 // HTML-NEXT:          <p>Defined at line [[# @LINE - 62]] of file {{.*}}templates.cpp</p>
 // HTML-NEXT:      </div>
 // HTML-NEXT:  </div>
+
+// MD-MUSTACHE: ### function
+// MD-MUSTACHE: *void function(bool x)*
+// MD-MUSTACHE: *Defined at {{.*}}templates.cpp#[[# @LINE - 26]]*
 
 /// A Tuple type
 ///
@@ -282,36 +299,3 @@ tuple<int, int, bool> func_with_tuple_param(tuple<int, int, bool> t) { return t;
 // MD: *Defined at {{.*}}templates.cpp#[[# @LINE - 44]]*
 // MD:  A function with a tuple parameter
 // MD: **t** The input to func_with_tuple_param
-
-// JSON:           "Name": "func_with_tuple_param",
-// COM:            FIXME: Add type info to parameters
-// JSON-NEXT:      "Params": [
-// JSON-NEXT:        {
-// JSON-NEXT:          "End": true,
-// JSON-NEXT:          "Name": "t",
-// JSON-NEXT:          "Type": "tuple"
-// JSON-NEXT:        }
-// JSON-NEXT:      ],
-// JSON-NEXT:      "ReturnType": {
-// JSON-NEXT:        "IsBuiltIn": false,
-// JSON-NEXT:        "IsTemplate": false,
-// JSON-NEXT:        "Name": "tuple",
-// JSON-NEXT:        "QualName": "tuple<int, int, bool>",
-// JSON-NEXT:        "USR": "{{([0-9A-F]{40})}}"
-// JSON-NEXT:      },
-
-// HTML:       <div class="delimiter-container">
-// HTML-NEXT:      <div id="{{([0-9A-F]{40})}}">
-// HTML-NEXT:          <pre><code class="language-cpp code-clang-doc">tuple func_with_tuple_param (tuple t)</code></pre>
-// HTML-NEXT:          <div>
-// HTML-NEXT:              <div>
-// HTML-NEXT:                  <p> A function with a tuple parameter</p>
-// HTML-NEXT:              </div>
-// HTML-NEXT:              <h3>Parameters</h3>
-// HTML-NEXT:              <div>
-// HTML-NEXT:                  <b>t</b>   The input to func_with_tuple_param
-// HTML-NEXT:              </div> 
-// HTML-NEXT:          </div>
-// HTML-NEXT:          <p>Defined at line [[# @LINE - 77]] of file {{.*}}templates.cpp</p>
-// HTML-NEXT:      </div>
-// HTML-NEXT:  </div>

@@ -138,6 +138,7 @@ extern volatile int YAMLGeneratorAnchorSource;
 extern volatile int MDGeneratorAnchorSource;
 extern volatile int HTMLGeneratorAnchorSource;
 extern volatile int JSONGeneratorAnchorSource;
+extern volatile int MDMustacheGeneratorAnchorSource;
 
 } // namespace doc
 } // namespace clang
