@@ -255,6 +255,38 @@ body, html {
     color:var(--text1)
 }
 
+.navbar__breadcrumb__container {
+    position: absolute;
+    top: 60px;              /* Directly below the navbar */
+    left: 0;
+    width: 100%;
+    background: var(--surface2);
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--text2);
+    box-sizing: border-box;
+}
+
+/* Individual breadcrumb boxes */
+.navbar__breadcrumb-item {
+    padding: 0.25rem 0.75rem;
+    background: var(--surface1);
+    border: 1px solid var(--text2);
+    border-radius: 4px;
+    color: var(--text1);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* Hover effect */
+.navbar__breadcrumb-item:hover {
+    background: var(--brand);
+    color: var(--text1-inverse);
+    border-color: var(--brand);
+    cursor: pointer;
+}
+
 .hero__container {
     margin-top:1rem;
     display:flex;

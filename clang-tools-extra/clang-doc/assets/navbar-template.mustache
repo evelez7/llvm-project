@@ -12,5 +12,12 @@
                 </li>
             </ul>
         </div>
+        {{#HasContexts}}
+        <div class="navbar__breadcrumb__container">
+            {{#Contexts}}
+            <div class="navbar__breadcrumb-item"><a href="{{RelativePath}}{{#End}}GlobalNamespace/{{/End}}{{DocumentationFileName}}.html">{{Name}}</a></div>{{^End}}&rarr;{{/End}}
+            {{/Contexts}}
+        </div>
+        {{/HasContexts}}
     </div>
 </nav>
