@@ -421,8 +421,22 @@ header {
 }
 
 .delimiter-container {
+    position: relative;
     padding: 0.5rem 1rem;
     margin-bottom:1rem; 
+}
+
+
+.corner-box {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  font-size: 0.8em;
+  background: #f0f0f0;
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: #555;
 }
 
 .nested-delimiter-container {

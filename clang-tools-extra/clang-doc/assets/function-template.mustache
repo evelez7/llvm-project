@@ -6,6 +6,11 @@
     This file defines the template for functions/methods
 }}
 <div id="{{USR}}" class="delimiter-container">
+        {{#Location}}
+        <div class="corner-box">
+          {{^FileURL}}{{Filename}}{{/FileURL}}{{#FileURL}}<a href="{{FileURL}}">{{Filename}}</a>{{/FileURL}}:{{LineNumber}}
+        </div>
+        {{/Location}}
         {{#Template}}
         <pre><code class="language-cpp code-clang-doc">template &lt;{{^VerticalDisplay}}{{#Parameters}}{{Param}}{{^End}}, {{/End}}{{/Parameters}}{{/VerticalDisplay}}</code>{{#VerticalDisplay}}<span class="param-container">{{#Parameters}}<span class="param"><code class="language-cpp code-clang-doc">{{Param}}{{^End}}, {{/End}}</code></span>{{/Parameters}}</span>{{/VerticalDisplay}}<code class="language-cpp code-clang-doc">&gt;</code></pre>
         {{/Template}}
@@ -17,7 +22,4 @@
             {{>Comments}}
         </div>
         {{/Description}}
-        {{#Location}}
-        <p>Defined at line {{LineNumber}} of file {{^FileURL}}{{Filename}}{{/FileURL}}{{#FileURL}}<a href="{{FileURL}}">{{Filename}}</a>{{/FileURL}}</p>
-        {{/Location}}
 </div>
