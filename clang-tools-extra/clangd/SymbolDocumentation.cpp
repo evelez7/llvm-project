@@ -71,6 +71,12 @@ public:
   void visitTextComment(const comments::TextComment *C) {
     // Always trim leading space after a newline.
     StringRef Text = C->getText();
+    if (PendingSpaceAfterInlineCommand && !LastChunkEndsWithNewline) {
+      if (!Text.empty() && !llvm::isSpace(Text.front()) &&
+          !llvm::isPunct(Text.front()))
+        Out.appendSpace();
+      PendingSpaceAfterInlineCommand = false;
+    }
     if (LastChunkEndsWithNewline && C->getText().starts_with(' '))
       Text = Text.drop_front();
 
@@ -98,6 +104,7 @@ public:
                         ArgText);
         break;
       }
+      PendingSpaceAfterInlineCommand = true;
     } else {
       if (C->getCommandName(Traits) == "n") {
         // \n is a special case, it is used to create a new line.
@@ -140,6 +147,7 @@ private:
   /// If true, the next leading space after a new line is trimmed.
   /// Initially set it to true, to always trim the first text line.
   bool LastChunkEndsWithNewline = true;
+  bool PendingSpaceAfterInlineCommand = false;
 };
 
 class ParagraphToString

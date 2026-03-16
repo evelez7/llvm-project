@@ -88,7 +88,7 @@ static void writeDescription(const CommentInfo &I, raw_ostream &OS) {
     break;
 
   case CommentKind::CK_BlockCommandComment:
-    OS << genEmphasis(I.Name);
+    OS << genEmphasis(I.Name) << ' ';
     for (const auto &Child : I.Children)
       writeDescription(*Child, OS);
     break;
@@ -99,8 +99,8 @@ static void writeDescription(const CommentInfo &I, raw_ostream &OS) {
 
   case CommentKind::CK_ParamCommandComment:
   case CommentKind::CK_TParamCommandComment: {
-    std::string Direction = I.Explicit ? (" " + I.Direction).str() : "";
-    OS << genEmphasis(I.ParamName) << I.Text << Direction;
+    std::string Direction = I.Explicit ? (" " + I.Direction + " ").str() : " ";
+    OS << genEmphasis(I.ParamName) << Direction;
     for (const auto &Child : I.Children)
       writeDescription(*Child, OS);
     break;
@@ -113,7 +113,7 @@ static void writeDescription(const CommentInfo &I, raw_ostream &OS) {
 
   case CommentKind::CK_VerbatimBlockLineComment:
   case CommentKind::CK_VerbatimLineComment:
-    OS << I.Text;
+    OS << ' ' << I.Text;
     writeNewLine(OS);
     break;
 

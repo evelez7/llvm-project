@@ -367,6 +367,9 @@ public:
 
     bool HavePartialTok = false;
     Token PartialTok;
+    // this affects inline commands, clangd inline tests
+    while (*Pos.BufferPtr == ' ')
+      ++Pos.BufferPtr;
     if (Pos.BufferPtr != Pos.BufferStart) {
       formTokenWithChars(PartialTok, getSourceLocation(),
                          Pos.BufferPtr, Pos.BufferEnd - Pos.BufferPtr,

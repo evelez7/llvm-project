@@ -11,7 +11,7 @@
 /// Aaa
 int TestLocation;
 // CHECK: VarDecl{{.*}}TestLocation
-// CHECK-NEXT:   FullComment 0x{{[^ ]*}} <line:[[@LINE-3]]:4, col:7>
+// CHECK-NEXT:   FullComment 0x{{[^ ]*}} <line:[[@LINE-3]]:5, col:7>
 
 ///
 int TestIndent;
@@ -23,21 +23,21 @@ int Test_TextComment;
 // CHECK:      VarDecl{{.*}}Test_TextComment
 // CHECK-NEXT:   FullComment
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" Aaa"
+// CHECK-NEXT:       TextComment{{.*}} Text="Aaa"
 
 /// \brief Aaa
 int Test_BlockCommandComment;
 // CHECK:      VarDecl{{.*}}Test_BlockCommandComment
 // CHECK:        BlockCommandComment{{.*}} Name="brief"
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" Aaa"
+// CHECK-NEXT:       TextComment{{.*}} Text="Aaa"
 
 /// \retval 42 Aaa
 int Test_BlockCommandComment_WithArgs();
 // CHECK:      FunctionDecl{{.*}}Test_BlockCommandComment_WithArgs
 // CHECK:        BlockCommandComment{{.*}} Name="retval" Arg[0]="42"
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" Aaa"
+// CHECK-NEXT:       TextComment{{.*}} Text="Aaa"
 
 /// \param Aaa xxx
 /// \param [in,out] Bbb yyy
@@ -45,17 +45,17 @@ void Test_ParamCommandComment(int Aaa, int Bbb);
 // CHECK:      FunctionDecl{{.*}}Test_ParamCommandComment
 // CHECK:        ParamCommandComment{{.*}} [in] implicitly Param="Aaa" ParamIndex=0
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" xxx"
+// CHECK-NEXT:       TextComment{{.*}} Text="xxx"
 // CHECK:        ParamCommandComment{{.*}} [in,out] explicitly Param="Bbb" ParamIndex=1
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" yyy"
+// CHECK-NEXT:       TextComment{{.*}} Text="yyy"
 
 /// \tparam Aaa xxx
 template <typename Aaa> class Test_TParamCommandComment;
 // CHECK:      ClassTemplateDecl{{.*}}Test_TParamCommandComment
 // CHECK:        TParamCommandComment{{.*}} Param="Aaa" Position=<0>
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" xxx"
+// CHECK-NEXT:       TextComment{{.*}} Text="xxx"
 
 /// \c Aaa
 int Test_InlineCommandComment;
@@ -66,7 +66,7 @@ int Test_InlineCommandComment;
 int Test_InlineCommandComment_NoArgs;
 // CHECK:      VarDecl{{.*}}Test_InlineCommandComment_NoArgs
 // CHECK:        InlineCommandComment{{.*}} Name="n" RenderNormal
-// CHECK-NEXT:   TextComment{{.*}} Text=" Aaa"
+// CHECK-NEXT:   TextComment{{.*}} Text="Aaa"
 
 /// \anchor Aaa
 int Test_InlineCommandCommentAnchor;
@@ -84,11 +84,11 @@ int Test_HTMLTagComment;
 // CHECK:      VarDecl{{.*}}Test_HTMLTagComment
 // CHECK-NEXT:   FullComment
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" "
+// CHECK-NEXT:       TextComment{{.*}} Text=""
 // CHECK-NEXT:       HTMLStartTagComment{{.*}} Name="a"
 // CHECK-NEXT:       TextComment{{.*}} Text="Aaa"
 // CHECK-NEXT:       HTMLEndTagComment{{.*}} Name="a"
-// CHECK-NEXT:       TextComment{{.*}} Text=" "
+// CHECK-NEXT:       TextComment{{.*}} Text=""
 // CHECK-NEXT:       HTMLStartTagComment{{.*}} Name="br" SelfClosing
 
 /// <a
@@ -98,7 +98,7 @@ int Test_HTMLTagMultilineBCPL;
 // CHECK:      VarDecl{{.*}}Test_HTMLTagMultilineBCPL
 // CHECK-NEXT:   FullComment
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" "
+// CHECK-NEXT:       TextComment{{.*}} Text=""
 // CHECK-NEXT:       HTMLStartTagComment{{.*}} Name="a" Attrs:  "href="foo"
 // CHECK-NEXT:       TextComment{{.*}} Text="Aaa"
 // CHECK-NEXT:       HTMLEndTagComment{{.*}} Name="a"
@@ -130,7 +130,7 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK:      FunctionTemplateDecl{{.*}}Test_TemplatedFunctionVariadic
 // CHECK:        ParamCommandComment{{.*}} [in] implicitly Param="..."
 // CHECK-NEXT:     ParagraphComment
-// CHECK-NEXT:       TextComment{{.*}} Text=" More arguments"
+// CHECK-NEXT:       TextComment{{.*}} Text="More arguments"
 
 /// \param[out] Aaa <summary>Short summary</summary>
 int Test_HTMLSummaryTag(int Aaa);
@@ -145,7 +145,7 @@ int Test_HTMLSummaryTag(int Aaa);
 int Test_UnderscoreInSpecialCommand;
 // CHECK:      VarDecl{{.*}}Test_UnderscoreInSpecialCommand 'int'
 // CHECK:        InlineCommandComment{{.*}} Name="thread_safe" RenderNormal
-// CHECK-NEXT:     TextComment{{.*}} Text=" test for underscore in special command"
+// CHECK-NEXT:     TextComment{{.*}} Text="test for underscore in special command"
 
 /// <details>
 ///   <summary>

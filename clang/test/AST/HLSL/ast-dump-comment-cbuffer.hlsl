@@ -5,7 +5,7 @@
 // JSON:"name": "A",
 // JSON-NEXT:"bufferKind": "cbuffer",
 // JSON:"kind": "TextComment",
-// JSON:"text": " CBuffer decl."
+// JSON:"text": "CBuffer decl."
 
 /// CBuffer decl.
 cbuffer A {
@@ -24,6 +24,6 @@ cbuffer A {
 // AST-NEXT: HLSLResourceBindingAttr {{.*}} Implicit "" "0"
 // AST-NEXT: FullComment
 // AST-NEXT: ParagraphComment
-// AST-NEXT: TextComment {{.*}} Text=" CBuffer decl."
+// AST-NEXT: TextComment {{.*}} Text="CBuffer decl."
 // AST-NEXT: VarDecl {{.*}} a 'hlsl_constant float'
 // AST-NEXT: VarDecl {{.*}} b 'hlsl_constant int'

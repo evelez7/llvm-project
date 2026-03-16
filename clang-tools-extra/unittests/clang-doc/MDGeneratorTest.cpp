@@ -234,14 +234,14 @@ TEST_F(MDGeneratorTest, emitCommentMD) {
   Brief->Children.emplace_back(allocatePtr<CommentInfo>());
   Brief->Children.back()->Kind = CommentKind::CK_TextComment;
   Brief->Children.back()->Name = "ParagraphComment";
-  Brief->Children.back()->Text = " Brief description.";
+  Brief->Children.back()->Text = "Brief description.";
 
   Top.Children.emplace_back(allocatePtr<CommentInfo>());
   CommentInfo *Extended = Top.Children.back().get();
   Extended->Kind = CommentKind::CK_ParagraphComment;
   Extended->Children.emplace_back(allocatePtr<CommentInfo>());
   Extended->Children.back()->Kind = CommentKind::CK_TextComment;
-  Extended->Children.back()->Text = " Extended description that";
+  Extended->Children.back()->Text = "Extended description that";
   Extended->Children.emplace_back(allocatePtr<CommentInfo>());
   Extended->Children.back()->Kind = CommentKind::CK_TextComment;
   Extended->Children.back()->Text = " continues onto the next line.";
@@ -261,7 +261,7 @@ TEST_F(MDGeneratorTest, emitCommentMD) {
   HTML->Children.back()->Name = "li";
   HTML->Children.emplace_back(allocatePtr<CommentInfo>());
   HTML->Children.back()->Kind = CommentKind::CK_TextComment;
-  HTML->Children.back()->Text = " Testing.";
+  HTML->Children.back()->Text = "Testing.";
   HTML->Children.emplace_back(allocatePtr<CommentInfo>());
   HTML->Children.back()->Kind = CommentKind::CK_HTMLEndTagComment;
   HTML->Children.back()->Name = "ul";
@@ -274,7 +274,7 @@ TEST_F(MDGeneratorTest, emitCommentMD) {
   Verbatim->CloseName = "endverbatim";
   Verbatim->Children.emplace_back(allocatePtr<CommentInfo>());
   Verbatim->Children.back()->Kind = CommentKind::CK_VerbatimBlockLineComment;
-  Verbatim->Children.back()->Text = " The description continues.";
+  Verbatim->Children.back()->Text = "The description continues.";
 
   Top.Children.emplace_back(allocatePtr<CommentInfo>());
   CommentInfo *ParamOut = Top.Children.back().get();
@@ -290,7 +290,7 @@ TEST_F(MDGeneratorTest, emitCommentMD) {
   ParamOut->Children.back()->Children.emplace_back(allocatePtr<CommentInfo>());
   ParamOut->Children.back()->Children.back()->Kind =
       CommentKind::CK_TextComment;
-  ParamOut->Children.back()->Children.back()->Text = " is a parameter.";
+  ParamOut->Children.back()->Children.back()->Text = "is a parameter.";
 
   Top.Children.emplace_back(allocatePtr<CommentInfo>());
   CommentInfo *ParamIn = Top.Children.back().get();
@@ -301,7 +301,7 @@ TEST_F(MDGeneratorTest, emitCommentMD) {
   ParamIn->Children.back()->Kind = CommentKind::CK_ParagraphComment;
   ParamIn->Children.back()->Children.emplace_back(allocatePtr<CommentInfo>());
   ParamIn->Children.back()->Children.back()->Kind = CommentKind::CK_TextComment;
-  ParamIn->Children.back()->Children.back()->Text = " is a parameter.";
+  ParamIn->Children.back()->Children.back()->Text = "is a parameter.";
   ParamIn->Children.back()->Children.emplace_back(allocatePtr<CommentInfo>());
   ParamIn->Children.back()->Children.back()->Kind = CommentKind::CK_TextComment;
 
@@ -333,15 +333,15 @@ TEST_F(MDGeneratorTest, emitCommentMD) {
 
 
 
- Brief description.
+Brief description.
 
- Extended description that continues onto the next line.
+Extended description that continues onto the next line.
 
 <ul "class=test">
 
 <li>
 
- Testing.</ul>
+Testing.</ul>
 
 
 
@@ -351,7 +351,7 @@ TEST_F(MDGeneratorTest, emitCommentMD) {
 
 **J** is a parameter.
 
-**return**void
+**return** void
 
 )raw";
 

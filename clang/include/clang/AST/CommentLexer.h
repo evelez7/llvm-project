@@ -300,6 +300,15 @@ private:
                           tok::TokenKind Kind);
 
   void formTextToken(Token &Result, const char *TokEnd) {
+    // this still affects the HTML clangd tests
+    // We need to check ahead if this will be HTML. If it is, then we need to
+    // preserve whitespace
+    const char *TokenPtr = BufferPtr;
+    while (*TokenPtr == ' ')
+      ++TokenPtr;
+    if (*TokenPtr != '>' && *TokenPtr != '<')
+      // BufferPtr += whitespaceCount;
+      BufferPtr = TokenPtr;
     StringRef Text(BufferPtr, TokEnd - BufferPtr);
     formTokenWithChars(Result, TokEnd, tok::text);
     Result.setText(Text);
