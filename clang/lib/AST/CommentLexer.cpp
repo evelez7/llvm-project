@@ -325,7 +325,11 @@ void Lexer::lexCommentText(Token &T) {
       default:
           // HTML ends up here to lex the actual content. We should check if the Token.
           // It knows that the character before this was a newline, ignoring the /// of comments.
-        return formTextToken(T, skipTextToken());
+        LexerState Cache = State;
+        State = LS_VerbatimLineText;
+        formTextToken(T, skipTextToken());
+        State = Cache;
+        return;
     }
   };
 

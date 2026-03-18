@@ -42,16 +42,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 73,
+// CHECK-NEXT:   "offset": 72,
 // CHECK-NEXT:   "line": 3,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 3
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 73,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 3
+// CHECK-NEXT:    "offset": 72,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 75,
@@ -64,15 +64,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 73,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 3
+// CHECK-NEXT:     "offset": 72,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 73,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 3
+// CHECK-NEXT:      "offset": 72,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
 // CHECK-NEXT:      "offset": 75,
@@ -85,15 +85,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 73,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 3
+// CHECK-NEXT:       "offset": 72,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 73,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 3
+// CHECK-NEXT:        "offset": 72,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
 // CHECK-NEXT:        "offset": 75,
@@ -101,7 +101,7 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:        "tokLen": 1
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": "Aaa"
+// CHECK-NEXT:      "text": " Aaa"
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   }
@@ -122,16 +122,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 121,
+// CHECK-NEXT:   "offset": 120,
 // CHECK-NEXT:   "line": 9,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 3
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 121,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 3
+// CHECK-NEXT:    "offset": 120,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 123,
@@ -144,15 +144,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 121,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 3
+// CHECK-NEXT:     "offset": 120,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 121,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 3
+// CHECK-NEXT:      "offset": 120,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
 // CHECK-NEXT:      "offset": 123,
@@ -165,15 +165,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 121,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 3
+// CHECK-NEXT:       "offset": 120,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 121,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 3
+// CHECK-NEXT:        "offset": 120,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
 // CHECK-NEXT:        "offset": 123,
@@ -181,7 +181,7 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:        "tokLen": 1
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": "Aaa"
+// CHECK-NEXT:      "text": " Aaa"
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   }
@@ -192,16 +192,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 152,
+// CHECK-NEXT:   "offset": 151,
 // CHECK-NEXT:   "line": 12,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 152,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 151,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 161,
@@ -214,20 +214,20 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 152,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "offset": 151,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 152,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 151,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 152,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 151,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "inner": [
@@ -235,23 +235,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 152,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 151,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 152,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 151,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 152,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 151,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   },
@@ -281,15 +281,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "ParagraphComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 159,
-// CHECK-NEXT:       "col": 12,
-// CHECK-NEXT:       "tokLen": 3
+// CHECK-NEXT:       "offset": 158,
+// CHECK-NEXT:       "col": 11,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 159,
-// CHECK-NEXT:        "col": 12,
-// CHECK-NEXT:        "tokLen": 3
+// CHECK-NEXT:        "offset": 158,
+// CHECK-NEXT:        "col": 11,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
 // CHECK-NEXT:        "offset": 161,
@@ -302,15 +302,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:        "id": "0x{{.*}}",
 // CHECK-NEXT:        "kind": "TextComment",
 // CHECK-NEXT:        "loc": {
-// CHECK-NEXT:         "offset": 159,
-// CHECK-NEXT:         "col": 12,
-// CHECK-NEXT:         "tokLen": 3
+// CHECK-NEXT:         "offset": 158,
+// CHECK-NEXT:         "col": 11,
+// CHECK-NEXT:         "tokLen": 0
 // CHECK-NEXT:        },
 // CHECK-NEXT:        "range": {
 // CHECK-NEXT:         "begin": {
-// CHECK-NEXT:          "offset": 159,
-// CHECK-NEXT:          "col": 12,
-// CHECK-NEXT:          "tokLen": 3
+// CHECK-NEXT:          "offset": 158,
+// CHECK-NEXT:          "col": 11,
+// CHECK-NEXT:          "tokLen": 0
 // CHECK-NEXT:         },
 // CHECK-NEXT:         "end": {
 // CHECK-NEXT:          "offset": 161,
@@ -318,7 +318,7 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:          "tokLen": 1
 // CHECK-NEXT:         }
 // CHECK-NEXT:        },
-// CHECK-NEXT:        "text": "Aaa"
+// CHECK-NEXT:        "text": " Aaa"
 // CHECK-NEXT:       }
 // CHECK-NEXT:      ]
 // CHECK-NEXT:     }
@@ -331,16 +331,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 198,
+// CHECK-NEXT:   "offset": 197,
 // CHECK-NEXT:   "line": 15,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 198,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 197,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 239,
@@ -354,21 +354,21 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 198,
+// CHECK-NEXT:     "offset": 197,
 // CHECK-NEXT:     "line": 15,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 198,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 197,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 198,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 197,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "inner": [
@@ -376,23 +376,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 198,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 197,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 198,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 197,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 198,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 197,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   },
@@ -411,10 +411,10 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "tokLen": 1
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 217,
+// CHECK-NEXT:      "offset": 216,
 // CHECK-NEXT:      "line": 16,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "direction": "in",
@@ -437,10 +437,10 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:        "tokLen": 3
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 217,
+// CHECK-NEXT:        "offset": 216,
 // CHECK-NEXT:        "line": 16,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "inner": [
@@ -471,24 +471,24 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:        "id": "0x{{.*}}",
 // CHECK-NEXT:        "kind": "TextComment",
 // CHECK-NEXT:        "loc": {
-// CHECK-NEXT:         "offset": 217,
+// CHECK-NEXT:         "offset": 216,
 // CHECK-NEXT:         "line": 16,
-// CHECK-NEXT:         "col": 5,
-// CHECK-NEXT:         "tokLen": 1
+// CHECK-NEXT:         "col": 4,
+// CHECK-NEXT:         "tokLen": 0
 // CHECK-NEXT:        },
 // CHECK-NEXT:        "range": {
 // CHECK-NEXT:         "begin": {
-// CHECK-NEXT:          "offset": 217,
-// CHECK-NEXT:          "col": 5,
-// CHECK-NEXT:          "tokLen": 1
+// CHECK-NEXT:          "offset": 216,
+// CHECK-NEXT:          "col": 4,
+// CHECK-NEXT:          "tokLen": 0
 // CHECK-NEXT:         },
 // CHECK-NEXT:         "end": {
-// CHECK-NEXT:          "offset": 217,
-// CHECK-NEXT:          "col": 5,
-// CHECK-NEXT:          "tokLen": 1
+// CHECK-NEXT:          "offset": 216,
+// CHECK-NEXT:          "col": 4,
+// CHECK-NEXT:          "tokLen": 0
 // CHECK-NEXT:         }
 // CHECK-NEXT:        },
-// CHECK-NEXT:        "text": ""
+// CHECK-NEXT:        "text": " "
 // CHECK-NEXT:       }
 // CHECK-NEXT:      ]
 // CHECK-NEXT:     }
@@ -573,16 +573,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 295,
+// CHECK-NEXT:   "offset": 294,
 // CHECK-NEXT:   "line": 19,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 295,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 294,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 309,
@@ -595,20 +595,20 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 295,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "offset": 294,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 295,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 294,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 295,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 294,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "inner": [
@@ -616,23 +616,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 295,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 294,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 295,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 294,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 295,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 294,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   },
@@ -712,15 +712,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 295,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "offset": 294,
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 295,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 294,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 309,
@@ -733,20 +733,20 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 295,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "offset": 294,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 295,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 294,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 295,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 294,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "inner": [
@@ -754,23 +754,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 295,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 294,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 295,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 294,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 295,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 294,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   },
@@ -853,16 +853,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 373,
+// CHECK-NEXT:   "offset": 372,
 // CHECK-NEXT:   "line": 22,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 373,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 372,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 374,
@@ -875,15 +875,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 373,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "offset": 372,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 373,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 372,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
 // CHECK-NEXT:      "offset": 374,
@@ -896,23 +896,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 373,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 372,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 373,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 372,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 373,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 372,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     },
 // CHECK-NEXT:     {
 // CHECK-NEXT:      "id": "0x{{.*}}",
@@ -1135,16 +1135,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 467,
+// CHECK-NEXT:   "offset": 466,
 // CHECK-NEXT:   "line": 29,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 467,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 466,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 476,
@@ -1157,20 +1157,20 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 467,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "offset": 466,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 467,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 466,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 467,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 466,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "inner": [
@@ -1178,23 +1178,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 467,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 466,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 467,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 466,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 467,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 466,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   },
@@ -1253,16 +1253,16 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 538,
+// CHECK-NEXT:   "offset": 537,
 // CHECK-NEXT:   "line": 34,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 538,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 537,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 562,
@@ -1275,20 +1275,20 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 538,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "offset": 537,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 538,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 537,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 538,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 537,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "inner": [
@@ -1296,23 +1296,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 538,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 537,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 538,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 537,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 538,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 537,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   },
@@ -1393,15 +1393,15 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NOT: {{^}}Dumping
 // CHECK:  "kind": "FullComment",
 // CHECK-NEXT:  "loc": {
-// CHECK-NEXT:   "offset": 538,
-// CHECK-NEXT:   "col": 5,
-// CHECK-NEXT:   "tokLen": 1
+// CHECK-NEXT:   "offset": 537,
+// CHECK-NEXT:   "col": 4,
+// CHECK-NEXT:   "tokLen": 0
 // CHECK-NEXT:  },
 // CHECK-NEXT:  "range": {
 // CHECK-NEXT:   "begin": {
-// CHECK-NEXT:    "offset": 538,
-// CHECK-NEXT:    "col": 5,
-// CHECK-NEXT:    "tokLen": 1
+// CHECK-NEXT:    "offset": 537,
+// CHECK-NEXT:    "col": 4,
+// CHECK-NEXT:    "tokLen": 0
 // CHECK-NEXT:   },
 // CHECK-NEXT:   "end": {
 // CHECK-NEXT:    "offset": 562,
@@ -1414,20 +1414,20 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:    "id": "0x{{.*}}",
 // CHECK-NEXT:    "kind": "ParagraphComment",
 // CHECK-NEXT:    "loc": {
-// CHECK-NEXT:     "offset": 538,
-// CHECK-NEXT:     "col": 5,
-// CHECK-NEXT:     "tokLen": 1
+// CHECK-NEXT:     "offset": 537,
+// CHECK-NEXT:     "col": 4,
+// CHECK-NEXT:     "tokLen": 0
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "range": {
 // CHECK-NEXT:     "begin": {
-// CHECK-NEXT:      "offset": 538,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 537,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     },
 // CHECK-NEXT:     "end": {
-// CHECK-NEXT:      "offset": 538,
-// CHECK-NEXT:      "col": 5,
-// CHECK-NEXT:      "tokLen": 1
+// CHECK-NEXT:      "offset": 537,
+// CHECK-NEXT:      "col": 4,
+// CHECK-NEXT:      "tokLen": 0
 // CHECK-NEXT:     }
 // CHECK-NEXT:    },
 // CHECK-NEXT:    "inner": [
@@ -1435,23 +1435,23 @@ void Test_TemplatedFunctionVariadic(int arg, ...);
 // CHECK-NEXT:      "id": "0x{{.*}}",
 // CHECK-NEXT:      "kind": "TextComment",
 // CHECK-NEXT:      "loc": {
-// CHECK-NEXT:       "offset": 538,
-// CHECK-NEXT:       "col": 5,
-// CHECK-NEXT:       "tokLen": 1
+// CHECK-NEXT:       "offset": 537,
+// CHECK-NEXT:       "col": 4,
+// CHECK-NEXT:       "tokLen": 0
 // CHECK-NEXT:      },
 // CHECK-NEXT:      "range": {
 // CHECK-NEXT:       "begin": {
-// CHECK-NEXT:        "offset": 538,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 537,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       },
 // CHECK-NEXT:       "end": {
-// CHECK-NEXT:        "offset": 538,
-// CHECK-NEXT:        "col": 5,
-// CHECK-NEXT:        "tokLen": 1
+// CHECK-NEXT:        "offset": 537,
+// CHECK-NEXT:        "col": 4,
+// CHECK-NEXT:        "tokLen": 0
 // CHECK-NEXT:       }
 // CHECK-NEXT:      },
-// CHECK-NEXT:      "text": ""
+// CHECK-NEXT:      "text": " "
 // CHECK-NEXT:     }
 // CHECK-NEXT:    ]
 // CHECK-NEXT:   },
