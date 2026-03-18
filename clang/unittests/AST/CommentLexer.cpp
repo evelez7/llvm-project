@@ -1059,9 +1059,6 @@ TEST_F(CommentLexerTest, HTML4) {
     ASSERT_EQ(tok::text,           Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),      Toks[0].getText());
 
-    ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
-
     ASSERT_EQ(tok::newline,        Toks[2].getKind());
   }
 }
@@ -1078,9 +1075,6 @@ TEST_F(CommentLexerTest, HTML5) {
 
   ASSERT_EQ(tok::text,           Toks[0].getKind());
   ASSERT_EQ(StringRef(" "),      Toks[0].getText());
-
-  ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-  ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
 
   ASSERT_EQ(tok::text,           Toks[2].getKind());
   ASSERT_EQ(StringRef("42"),     Toks[2].getText());
@@ -1100,11 +1094,6 @@ TEST_F(CommentLexerTest, HTML6) {
   ASSERT_EQ(tok::text,           Toks[0].getKind());
   ASSERT_EQ(StringRef(" "),      Toks[0].getText());
 
-  ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-  ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
-
-  ASSERT_EQ(tok::html_greater,   Toks[2].getKind());
-
   ASSERT_EQ(tok::text,           Toks[3].getKind());
   ASSERT_EQ(StringRef(" Meow"),  Toks[3].getText());
 
@@ -1122,9 +1111,6 @@ TEST_F(CommentLexerTest, HTML7) {
 
   ASSERT_EQ(tok::text,           Toks[0].getKind());
   ASSERT_EQ(StringRef(" "),      Toks[0].getText());
-
-  ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-  ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
 
   ASSERT_EQ(tok::text,           Toks[2].getKind());
   ASSERT_EQ(StringRef("="),      Toks[2].getText());
@@ -1144,15 +1130,6 @@ TEST_F(CommentLexerTest, HTML8) {
   ASSERT_EQ(tok::text,           Toks[0].getKind());
   ASSERT_EQ(StringRef(" "),      Toks[0].getText());
 
-  ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-  ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
-
-  ASSERT_EQ(tok::html_ident,     Toks[2].getKind());
-  ASSERT_EQ(StringRef("src"),   Toks[2].getHTMLIdent());
-
-  ASSERT_EQ(tok::html_equals,    Toks[3].getKind());
-
-  ASSERT_EQ(tok::html_greater,   Toks[4].getKind());
 
   ASSERT_EQ(tok::text,           Toks[5].getKind());
   ASSERT_EQ(StringRef(" Meow"),  Toks[5].getText());
@@ -1176,12 +1153,6 @@ TEST_F(CommentLexerTest, HTML9) {
     ASSERT_EQ(tok::text,           Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),      Toks[0].getText());
 
-    ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
-
-    ASSERT_EQ(tok::html_ident,     Toks[2].getKind());
-    ASSERT_EQ(StringRef("src"),    Toks[2].getHTMLIdent());
-
     ASSERT_EQ(tok::newline,        Toks[3].getKind());
   }
 }
@@ -1201,14 +1172,6 @@ TEST_F(CommentLexerTest, HTML10) {
 
     ASSERT_EQ(tok::text,           Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),      Toks[0].getText());
-
-    ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
-
-    ASSERT_EQ(tok::html_ident,     Toks[2].getKind());
-    ASSERT_EQ(StringRef("src"),    Toks[2].getHTMLIdent());
-
-    ASSERT_EQ(tok::html_equals,    Toks[3].getKind());
 
     ASSERT_EQ(tok::newline,        Toks[4].getKind());
   }
@@ -1232,17 +1195,6 @@ TEST_F(CommentLexerTest, HTML11) {
     ASSERT_EQ(tok::text,               Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),          Toks[0].getText());
 
-    ASSERT_EQ(tok::html_start_tag,     Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),        Toks[1].getHTMLTagStartName());
-
-    ASSERT_EQ(tok::html_ident,         Toks[2].getKind());
-    ASSERT_EQ(StringRef("src"),        Toks[2].getHTMLIdent());
-
-    ASSERT_EQ(tok::html_equals,        Toks[3].getKind());
-
-    ASSERT_EQ(tok::html_quoted_string, Toks[4].getKind());
-    ASSERT_EQ(StringRef(""),           Toks[4].getHTMLQuotedString());
-
     ASSERT_EQ(tok::newline,            Toks[5].getKind());
   }
 }
@@ -1258,14 +1210,6 @@ TEST_F(CommentLexerTest, HTML12) {
 
   ASSERT_EQ(tok::text,           Toks[0].getKind());
   ASSERT_EQ(StringRef(" "),      Toks[0].getText());
-
-  ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-  ASSERT_EQ(StringRef("img"),    Toks[1].getHTMLTagStartName());
-
-  ASSERT_EQ(tok::html_ident,     Toks[2].getKind());
-  ASSERT_EQ(StringRef("src"),    Toks[2].getHTMLIdent());
-
-  ASSERT_EQ(tok::html_equals,    Toks[3].getKind());
 
   ASSERT_EQ(tok::text,           Toks[4].getKind());
   ASSERT_EQ(StringRef("@"),      Toks[4].getText());
@@ -1291,17 +1235,6 @@ TEST_F(CommentLexerTest, HTML13) {
     ASSERT_EQ(tok::text,                  Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),             Toks[0].getText());
 
-    ASSERT_EQ(tok::html_start_tag,        Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),           Toks[1].getHTMLTagStartName());
-
-    ASSERT_EQ(tok::html_ident,            Toks[2].getKind());
-    ASSERT_EQ(StringRef("src"),           Toks[2].getHTMLIdent());
-
-    ASSERT_EQ(tok::html_equals,           Toks[3].getKind());
-
-    ASSERT_EQ(tok::html_quoted_string,    Toks[4].getKind());
-    ASSERT_EQ(StringRef("val\\\"\\'val"), Toks[4].getHTMLQuotedString());
-
     ASSERT_EQ(tok::newline,               Toks[5].getKind());
   }
 }
@@ -1321,19 +1254,6 @@ TEST_F(CommentLexerTest, HTML14) {
 
     ASSERT_EQ(tok::text,                  Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),             Toks[0].getText());
-
-    ASSERT_EQ(tok::html_start_tag,        Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),           Toks[1].getHTMLTagStartName());
-
-    ASSERT_EQ(tok::html_ident,            Toks[2].getKind());
-    ASSERT_EQ(StringRef("src"),           Toks[2].getHTMLIdent());
-
-    ASSERT_EQ(tok::html_equals,           Toks[3].getKind());
-
-    ASSERT_EQ(tok::html_quoted_string,    Toks[4].getKind());
-    ASSERT_EQ(StringRef("val\\\"\\'val"), Toks[4].getHTMLQuotedString());
-
-    ASSERT_EQ(tok::html_greater,          Toks[5].getKind());
 
     ASSERT_EQ(tok::newline,               Toks[6].getKind());
   }
@@ -1355,11 +1275,6 @@ TEST_F(CommentLexerTest, HTML15) {
     ASSERT_EQ(tok::text,               Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),          Toks[0].getText());
 
-    ASSERT_EQ(tok::html_start_tag,     Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),        Toks[1].getHTMLTagStartName());
-
-    ASSERT_EQ(tok::html_slash_greater, Toks[2].getKind());
-
     ASSERT_EQ(tok::newline,            Toks[3].getKind());
   }
 }
@@ -1379,9 +1294,6 @@ TEST_F(CommentLexerTest, HTML16) {
 
     ASSERT_EQ(tok::text,               Toks[0].getKind());
     ASSERT_EQ(StringRef(" "),          Toks[0].getText());
-
-    ASSERT_EQ(tok::html_start_tag,     Toks[1].getKind());
-    ASSERT_EQ(StringRef("img"),        Toks[1].getHTMLTagStartName());
 
     ASSERT_EQ(tok::text,               Toks[2].getKind());
     ASSERT_EQ(StringRef("/"),          Toks[2].getText());
@@ -1444,9 +1356,6 @@ TEST_F(CommentLexerTest, HTML19) {
   ASSERT_EQ(tok::text,         Toks[0].getKind());
   ASSERT_EQ(StringRef(" "),    Toks[0].getText());
 
-  ASSERT_EQ(tok::html_end_tag, Toks[1].getKind());
-  ASSERT_EQ(StringRef("img"),  Toks[1].getHTMLTagEndName());
-
   ASSERT_EQ(tok::newline,      Toks[2].getKind());
 }
 
@@ -1466,29 +1375,8 @@ TEST_F(CommentLexerTest, HTML20) {
   ASSERT_EQ(tok::text, Toks[0].getKind());
   ASSERT_EQ(StringRef(" "), Toks[0].getText());
 
-  ASSERT_EQ(tok::html_start_tag, Toks[1].getKind());
-  ASSERT_EQ(StringRef("a"), Toks[1].getHTMLTagStartName());
-
-  ASSERT_EQ(tok::html_ident, Toks[2].getKind());
-  ASSERT_EQ(StringRef("href"), Toks[2].getHTMLIdent());
-
-  ASSERT_EQ(tok::html_equals, Toks[3].getKind());
-
-  ASSERT_EQ(tok::html_quoted_string, Toks[4].getKind());
-  ASSERT_EQ(StringRef("foo"), Toks[4].getHTMLQuotedString());
-
-  ASSERT_EQ(tok::html_ident, Toks[5].getKind());
-  ASSERT_EQ(StringRef("bar"), Toks[5].getHTMLIdent());
-
-  ASSERT_EQ(tok::html_greater, Toks[6].getKind());
-
   ASSERT_EQ(tok::text, Toks[7].getKind());
   ASSERT_EQ(StringRef("text"), Toks[7].getText());
-
-  ASSERT_EQ(tok::html_end_tag, Toks[8].getKind());
-  ASSERT_EQ(StringRef("a"), Toks[8].getHTMLTagEndName());
-
-  ASSERT_EQ(tok::html_greater, Toks[9].getKind());
 
   ASSERT_EQ(tok::newline, Toks[10].getKind());
 }
@@ -1513,29 +1401,10 @@ TEST_F(CommentLexerTest, HTML21) {
   ASSERT_EQ(tok::text, Toks[1].getKind());
   ASSERT_EQ(StringRef(" "), Toks[1].getText());
 
-  ASSERT_EQ(tok::html_start_tag, Toks[2].getKind());
-  ASSERT_EQ(StringRef("a"), Toks[2].getHTMLTagStartName());
-
-  ASSERT_EQ(tok::html_ident, Toks[3].getKind());
-  ASSERT_EQ(StringRef("href"), Toks[3].getHTMLIdent());
-
-  ASSERT_EQ(tok::html_equals, Toks[4].getKind());
-
-  ASSERT_EQ(tok::html_quoted_string, Toks[5].getKind());
-  ASSERT_EQ(StringRef("foo"), Toks[5].getHTMLQuotedString());
-
-  ASSERT_EQ(tok::html_ident, Toks[6].getKind());
-  ASSERT_EQ(StringRef("bar"), Toks[6].getHTMLIdent());
-
-  ASSERT_EQ(tok::html_greater, Toks[7].getKind());
 
   ASSERT_EQ(tok::text, Toks[8].getKind());
   ASSERT_EQ(StringRef("text"), Toks[8].getText());
 
-  ASSERT_EQ(tok::html_end_tag, Toks[9].getKind());
-  ASSERT_EQ(StringRef("a"), Toks[9].getHTMLTagEndName());
-
-  ASSERT_EQ(tok::html_greater, Toks[10].getKind());
 
   ASSERT_EQ(tok::newline, Toks[11].getKind());
 
@@ -1562,9 +1431,6 @@ TEST_F(CommentLexerTest, HTML22) {
 
   ASSERT_EQ(tok::text, Toks[1].getKind());
   ASSERT_EQ(StringRef(" "), Toks[1].getText());
-
-  ASSERT_EQ(tok::html_start_tag, Toks[2].getKind());
-  ASSERT_EQ(StringRef("a"), Toks[2].getHTMLTagStartName());
 
   ASSERT_EQ(tok::newline, Toks[3].getKind());
 

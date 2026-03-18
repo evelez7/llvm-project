@@ -41,13 +41,6 @@ enum TokenKind {
   verbatim_block_end,
   verbatim_line_name,
   verbatim_line_text,
-  html_start_tag,     // <tag
-  html_ident,         // attr
-  html_equals,        // =
-  html_quoted_string, // "blah\"blah" or 'blah\'blah'
-  html_greater,       // >
-  html_slash_greater, // />
-  html_end_tag        // </tag
 };
 } // end namespace tok
 
@@ -169,50 +162,6 @@ public:
     IntVal = Text.size();
   }
 
-  StringRef getHTMLTagStartName() const LLVM_READONLY {
-    assert(is(tok::html_start_tag));
-    return StringRef(TextPtr, IntVal);
-  }
-
-  void setHTMLTagStartName(StringRef Name) {
-    assert(is(tok::html_start_tag));
-    TextPtr = Name.data();
-    IntVal = Name.size();
-  }
-
-  StringRef getHTMLIdent() const LLVM_READONLY {
-    assert(is(tok::html_ident));
-    return StringRef(TextPtr, IntVal);
-  }
-
-  void setHTMLIdent(StringRef Name) {
-    assert(is(tok::html_ident));
-    TextPtr = Name.data();
-    IntVal = Name.size();
-  }
-
-  StringRef getHTMLQuotedString() const LLVM_READONLY {
-    assert(is(tok::html_quoted_string));
-    return StringRef(TextPtr, IntVal);
-  }
-
-  void setHTMLQuotedString(StringRef Str) {
-    assert(is(tok::html_quoted_string));
-    TextPtr = Str.data();
-    IntVal = Str.size();
-  }
-
-  StringRef getHTMLTagEndName() const LLVM_READONLY {
-    assert(is(tok::html_end_tag));
-    return StringRef(TextPtr, IntVal);
-  }
-
-  void setHTMLTagEndName(StringRef Name) {
-    assert(is(tok::html_end_tag));
-    TextPtr = Name.data();
-    IntVal = Name.size();
-  }
-
   void dump(const Lexer &L, const SourceManager &SM) const;
 };
 
@@ -271,12 +220,6 @@ private:
     /// Finished lexing verbatim line beginning command, will lex text (one
     /// line).
     LS_VerbatimLineText,
-
-    /// Finished lexing \verbatim <TAG \endverbatim part, lexing tag attributes.
-    LS_HTMLStartTag,
-
-    /// Finished lexing \verbatim </TAG \endverbatim part, lexing '>'.
-    LS_HTMLEndTag
   };
 
   /// Current lexing mode.
@@ -337,16 +280,6 @@ private:
                                const CommandInfo *Info);
 
   void lexVerbatimLineText(Token &T);
-
-  void lexHTMLCharacterReference(Token &T);
-
-  void setupAndLexHTMLStartTag(Token &T);
-
-  void lexHTMLStartTag(Token &T);
-
-  void setupAndLexHTMLEndTag(Token &T);
-
-  void lexHTMLEndTag(Token &T);
 
 public:
   Lexer(llvm::BumpPtrAllocator &Allocator, DiagnosticsEngine &Diags,

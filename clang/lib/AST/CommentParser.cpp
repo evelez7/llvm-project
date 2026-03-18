@@ -598,122 +598,6 @@ InlineCommandComment *Parser::parseInlineCommand() {
   return IC;
 }
 
-HTMLStartTagComment *Parser::parseHTMLStartTag() {
-  assert(Tok.is(tok::html_start_tag));
-  HTMLStartTagComment *HST =
-      S.actOnHTMLStartTagStart(Tok.getLocation(),
-                               Tok.getHTMLTagStartName());
-  consumeToken();
-
-  SmallVector<HTMLStartTagComment::Attribute, 2> Attrs;
-  while (true) {
-    switch (Tok.getKind()) {
-    case tok::html_ident: {
-      Token Ident = Tok;
-      consumeToken();
-      if (Tok.isNot(tok::html_equals)) {
-        Attrs.push_back(HTMLStartTagComment::Attribute(Ident.getLocation(),
-                                                       Ident.getHTMLIdent()));
-        continue;
-      }
-      Token Equals = Tok;
-      consumeToken();
-      if (Tok.isNot(tok::html_quoted_string)) {
-        Diag(Tok.getLocation(),
-             diag::warn_doc_html_start_tag_expected_quoted_string)
-          << SourceRange(Equals.getLocation());
-        Attrs.push_back(HTMLStartTagComment::Attribute(Ident.getLocation(),
-                                                       Ident.getHTMLIdent()));
-        while (Tok.is(tok::html_equals) ||
-               Tok.is(tok::html_quoted_string))
-          consumeToken();
-        continue;
-      }
-      Attrs.push_back(HTMLStartTagComment::Attribute(
-                              Ident.getLocation(),
-                              Ident.getHTMLIdent(),
-                              Equals.getLocation(),
-                              SourceRange(Tok.getLocation(),
-                                          Tok.getEndLocation()),
-                              Tok.getHTMLQuotedString()));
-      consumeToken();
-      continue;
-    }
-
-    case tok::html_greater:
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(ArrayRef(Attrs)),
-                                Tok.getLocation(),
-                                /* IsSelfClosing = */ false);
-      consumeToken();
-      return HST;
-
-    case tok::html_slash_greater:
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(ArrayRef(Attrs)),
-                                Tok.getLocation(),
-                                /* IsSelfClosing = */ true);
-      consumeToken();
-      return HST;
-
-    case tok::html_equals:
-    case tok::html_quoted_string:
-      Diag(Tok.getLocation(),
-           diag::warn_doc_html_start_tag_expected_ident_or_greater);
-      while (Tok.is(tok::html_equals) ||
-             Tok.is(tok::html_quoted_string))
-        consumeToken();
-      if (Tok.is(tok::html_ident) ||
-          Tok.is(tok::html_greater) ||
-          Tok.is(tok::html_slash_greater))
-        continue;
-
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(ArrayRef(Attrs)),
-                                SourceLocation(),
-                                /* IsSelfClosing = */ false);
-      return HST;
-
-    default:
-      // Not a token from an HTML start tag.  Thus HTML tag prematurely ended.
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(ArrayRef(Attrs)),
-                                SourceLocation(),
-                                /* IsSelfClosing = */ false);
-      bool StartLineInvalid;
-      const unsigned StartLine = SourceMgr.getPresumedLineNumber(
-                                                  HST->getLocation(),
-                                                  &StartLineInvalid);
-      bool EndLineInvalid;
-      const unsigned EndLine = SourceMgr.getPresumedLineNumber(
-                                                  Tok.getLocation(),
-                                                  &EndLineInvalid);
-      if (StartLineInvalid || EndLineInvalid || StartLine == EndLine)
-        Diag(Tok.getLocation(),
-             diag::warn_doc_html_start_tag_expected_ident_or_greater)
-          << HST->getSourceRange();
-      else {
-        Diag(Tok.getLocation(),
-             diag::warn_doc_html_start_tag_expected_ident_or_greater);
-        Diag(HST->getLocation(), diag::note_doc_html_tag_started_here)
-          << HST->getSourceRange();
-      }
-      return HST;
-    }
-  }
-}
-
-HTMLEndTagComment *Parser::parseHTMLEndTag() {
-  assert(Tok.is(tok::html_end_tag));
-  Token TokEndTag = Tok;
-  consumeToken();
-  SourceLocation Loc;
-  if (Tok.is(tok::html_greater)) {
-    Loc = Tok.getLocation();
-    consumeToken();
-  }
-
-  return S.actOnHTMLEndTag(TokEndTag.getLocation(),
-                           Loc,
-                           TokEndTag.getHTMLTagEndName());
-}
-
 BlockContentComment *Parser::parseParagraphOrBlockCommand() {
   SmallVector<InlineContentComment *, 8> Content;
 
@@ -783,15 +667,6 @@ BlockContentComment *Parser::parseParagraphOrBlockCommand() {
       continue;
     }
 
-    // Don't deal with HTML tag soup now.
-    case tok::html_start_tag:
-      Content.push_back(parseHTMLStartTag());
-      continue;
-
-    case tok::html_end_tag:
-      Content.push_back(parseHTMLEndTag());
-      continue;
-
     case tok::text:
       Content.push_back(S.actOnText(Tok.getLocation(),
                                     Tok.getEndLocation(),
@@ -802,11 +677,6 @@ BlockContentComment *Parser::parseParagraphOrBlockCommand() {
     case tok::verbatim_block_line:
     case tok::verbatim_block_end:
     case tok::verbatim_line_text:
-    case tok::html_ident:
-    case tok::html_equals:
-    case tok::html_quoted_string:
-    case tok::html_greater:
-    case tok::html_slash_greater:
       llvm_unreachable("should not see this token");
     }
     break;
@@ -893,8 +763,6 @@ BlockContentComment *Parser::parseBlockContent() {
   case tok::unknown_command:
   case tok::backslash_command:
   case tok::at_command:
-  case tok::html_start_tag:
-  case tok::html_end_tag:
     return parseParagraphOrBlockCommand();
 
   case tok::verbatim_block_begin:
@@ -908,11 +776,6 @@ BlockContentComment *Parser::parseBlockContent() {
   case tok::verbatim_block_line:
   case tok::verbatim_block_end:
   case tok::verbatim_line_text:
-  case tok::html_ident:
-  case tok::html_equals:
-  case tok::html_quoted_string:
-  case tok::html_greater:
-  case tok::html_slash_greater:
     llvm_unreachable("should not see this token");
   }
   llvm_unreachable("bogus token kind");

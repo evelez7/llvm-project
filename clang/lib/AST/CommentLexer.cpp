@@ -342,12 +342,6 @@ void Lexer::lexCommentText(Token &T) {
   case LS_VerbatimLineText:
     lexVerbatimLineText(T);
     return;
-  case LS_HTMLStartTag:
-    lexHTMLStartTag(T);
-    return;
-  case LS_HTMLEndTag:
-    lexHTMLEndTag(T);
-    return;
   }
 
   assert(State == LS_Normal);
@@ -440,10 +434,6 @@ void Lexer::lexCommentText(Token &T) {
       return;
     }
 
-    case '&':
-      lexHTMLCharacterReference(T);
-      return;
-
     case '<': {
       TokenPtr++;
       if (TokenPtr == CommentEnd) {
@@ -451,11 +441,6 @@ void Lexer::lexCommentText(Token &T) {
         return;
       }
       const char C = *TokenPtr;
-      if (isHTMLIdentifierStartingCharacter(C))
-        setupAndLexHTMLStartTag(T);
-      else if (C == '/')
-        setupAndLexHTMLEndTag(T);
-      else
         formTextToken(T, TokenPtr);
       return;
     }
@@ -571,201 +556,6 @@ void Lexer::lexVerbatimLineText(Token &T) {
   State = LS_Normal;
 }
 
-void Lexer::lexHTMLCharacterReference(Token &T) {
-  const char *TokenPtr = BufferPtr;
-  assert(*TokenPtr == '&');
-  TokenPtr++;
-  if (TokenPtr == CommentEnd) {
-    formTextToken(T, TokenPtr);
-    return;
-  }
-  const char *NamePtr;
-  bool isNamed = false;
-  bool isDecimal = false;
-  char C = *TokenPtr;
-  if (isHTMLNamedCharacterReferenceCharacter(C)) {
-    NamePtr = TokenPtr;
-    TokenPtr = skipNamedCharacterReference(TokenPtr, CommentEnd);
-    isNamed = true;
-  } else if (C == '#') {
-    TokenPtr++;
-    if (TokenPtr == CommentEnd) {
-      formTextToken(T, TokenPtr);
-      return;
-    }
-    C = *TokenPtr;
-    if (isHTMLDecimalCharacterReferenceCharacter(C)) {
-      NamePtr = TokenPtr;
-      TokenPtr = skipDecimalCharacterReference(TokenPtr, CommentEnd);
-      isDecimal = true;
-    } else if (C == 'x' || C == 'X') {
-      TokenPtr++;
-      NamePtr = TokenPtr;
-      TokenPtr = skipHexCharacterReference(TokenPtr, CommentEnd);
-    } else {
-      formTextToken(T, TokenPtr);
-      return;
-    }
-  } else {
-    formTextToken(T, TokenPtr);
-    return;
-  }
-  if (NamePtr == TokenPtr || TokenPtr == CommentEnd ||
-      *TokenPtr != ';') {
-    formTextToken(T, TokenPtr);
-    return;
-  }
-  StringRef Name(NamePtr, TokenPtr - NamePtr);
-  TokenPtr++; // Skip semicolon.
-  StringRef Resolved;
-  if (isNamed)
-    Resolved = resolveHTMLNamedCharacterReference(Name);
-  else if (isDecimal)
-    Resolved = resolveHTMLDecimalCharacterReference(Name);
-  else
-    Resolved = resolveHTMLHexCharacterReference(Name);
-
-  if (Resolved.empty()) {
-    formTextToken(T, TokenPtr);
-    return;
-  }
-  formTokenWithChars(T, TokenPtr, tok::text);
-  T.setText(Resolved);
-}
-
-void Lexer::setupAndLexHTMLStartTag(Token &T) {
-  assert(BufferPtr[0] == '<' &&
-         isHTMLIdentifierStartingCharacter(BufferPtr[1]));
-  const char *TagNameEnd = skipHTMLIdentifier(BufferPtr + 2, CommentEnd);
-  StringRef Name(BufferPtr + 1, TagNameEnd - (BufferPtr + 1));
-  if (!isHTMLTagName(Name)) {
-    formTextToken(T, TagNameEnd);
-    return;
-  }
-
-  formTokenWithChars(T, TagNameEnd, tok::html_start_tag);
-  T.setHTMLTagStartName(Name);
-
-  BufferPtr = skipHorizontalWhitespace(BufferPtr, CommentEnd);
-  if (BufferPtr == CommentEnd) { // in BCPL comments
-    State = LS_HTMLStartTag;
-    return;
-  }
-
-  const char C = *BufferPtr;
-  if (BufferPtr != CommentEnd &&
-      (C == '>' || C == '/' || isVerticalWhitespace(C) ||
-       isHTMLIdentifierStartingCharacter(C)))
-    State = LS_HTMLStartTag;
-}
-
-void Lexer::lexHTMLStartTag(Token &T) {
-  assert(State == LS_HTMLStartTag);
-
-  // Skip leading whitespace and comment decorations
-  while (isVerticalWhitespace(*BufferPtr)) {
-    BufferPtr = skipNewline(BufferPtr, CommentEnd);
-
-    if (CommentState == LCS_InsideCComment)
-      skipLineStartingDecorations();
-
-    BufferPtr = skipHorizontalWhitespace(BufferPtr, CommentEnd);
-    if (BufferPtr == CommentEnd) {
-      // HTML starting tags must be defined in a single comment block.
-      // It's likely a user-error where they forgot to terminate the comment.
-      State = LS_Normal;
-      // Since at least one newline was skipped and one token needs to be lexed,
-      // return a newline.
-      formTokenWithChars(T, BufferPtr, tok::newline);
-      return;
-    }
-  }
-
-  const char *TokenPtr = BufferPtr;
-  char C = *TokenPtr;
-  if (isHTMLIdentifierCharacter(C)) {
-    TokenPtr = skipHTMLIdentifier(TokenPtr, CommentEnd);
-    StringRef Ident(BufferPtr, TokenPtr - BufferPtr);
-    formTokenWithChars(T, TokenPtr, tok::html_ident);
-    T.setHTMLIdent(Ident);
-  } else {
-    switch (C) {
-    case '=':
-      TokenPtr++;
-      formTokenWithChars(T, TokenPtr, tok::html_equals);
-      break;
-    case '\"':
-    case '\'': {
-      const char *OpenQuote = TokenPtr;
-      TokenPtr = skipHTMLQuotedString(TokenPtr, CommentEnd);
-      const char *ClosingQuote = TokenPtr;
-      if (TokenPtr != CommentEnd) // Skip closing quote.
-        TokenPtr++;
-      formTokenWithChars(T, TokenPtr, tok::html_quoted_string);
-      T.setHTMLQuotedString(StringRef(OpenQuote + 1,
-                                      ClosingQuote - (OpenQuote + 1)));
-      break;
-    }
-    case '>':
-      TokenPtr++;
-      formTokenWithChars(T, TokenPtr, tok::html_greater);
-      State = LS_Normal;
-      return;
-    case '/':
-      TokenPtr++;
-      if (TokenPtr != CommentEnd && *TokenPtr == '>') {
-        TokenPtr++;
-        formTokenWithChars(T, TokenPtr, tok::html_slash_greater);
-      } else
-        formTextToken(T, TokenPtr);
-
-      State = LS_Normal;
-      return;
-    }
-  }
-
-  // Now look ahead and return to normal state if we don't see any HTML tokens
-  // ahead.
-  BufferPtr = skipHorizontalWhitespace(BufferPtr, CommentEnd);
-  if (BufferPtr == CommentEnd) {
-    return;
-  }
-
-  C = *BufferPtr;
-  if (!isHTMLIdentifierStartingCharacter(C) && !isVerticalWhitespace(C) &&
-      C != '=' && C != '\"' && C != '\'' && C != '>' && C != '/') {
-    State = LS_Normal;
-    return;
-  }
-}
-
-void Lexer::setupAndLexHTMLEndTag(Token &T) {
-  assert(BufferPtr[0] == '<' && BufferPtr[1] == '/');
-
-  const char *TagNameBegin = skipWhitespace(BufferPtr + 2, CommentEnd);
-  const char *TagNameEnd = skipHTMLIdentifier(TagNameBegin, CommentEnd);
-  StringRef Name(TagNameBegin, TagNameEnd - TagNameBegin);
-  if (!isHTMLTagName(Name)) {
-    formTextToken(T, TagNameEnd);
-    return;
-  }
-
-  const char *End = skipWhitespace(TagNameEnd, CommentEnd);
-
-  formTokenWithChars(T, End, tok::html_end_tag);
-  T.setHTMLTagEndName(Name);
-
-  if (BufferPtr != CommentEnd && *BufferPtr == '>')
-    State = LS_HTMLEndTag;
-}
-
-void Lexer::lexHTMLEndTag(Token &T) {
-  assert(BufferPtr != CommentEnd && *BufferPtr == '>');
-
-  formTokenWithChars(T, BufferPtr + 1, tok::html_greater);
-  State = LS_Normal;
-}
-
 Lexer::Lexer(llvm::BumpPtrAllocator &Allocator, DiagnosticsEngine &Diags,
              const CommandTraits &Traits, SourceLocation FileLoc,
              const char *BufferStart, const char *BufferEnd, bool ParseCommands)
@@ -810,9 +600,6 @@ again:
       case LS_VerbatimBlockFirstLine:
       case LS_VerbatimBlockBody:
         break;
-      case LS_HTMLStartTag:
-        BufferPtr = skipHorizontalWhitespace(BufferPtr, BufferEnd);
-        break;
       default:
         State = LS_Normal;
         break;
@@ -848,13 +635,6 @@ again:
     while(EndWhitespace != BufferEnd && *EndWhitespace != '/')
       EndWhitespace++;
 
-    // When lexing the start of an HTML tag (i.e. going through the attributes)
-    // there won't be any newlines generated.
-    if (State == LS_HTMLStartTag && EndWhitespace != BufferEnd) {
-      CommentState = LCS_BeforeComment;
-      BufferPtr = EndWhitespace;
-      goto again;
-    }
 
     // Turn any whitespace between comments (and there is only whitespace
     // between them -- guaranteed by comment extraction) into a newline.  We
@@ -878,13 +658,6 @@ again:
         BufferPtr += 2;
         assert(BufferPtr <= BufferEnd);
 
-        // When lexing the start of an HTML tag (i.e. going through the
-        // attributes) there won't be any newlines generated - whitespace still
-        // needs to be skipped.
-        if (State == LS_HTMLStartTag && BufferPtr != BufferEnd) {
-          CommentState = LCS_BetweenComments;
-          goto again;
-        }
 
         // Synthenize newline just after the C comment, regardless if there is
         // actually a newline.
